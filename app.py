@@ -136,6 +136,7 @@ page = st.sidebar.radio("Navigate", [
     "Model 2: Housing Values",
     "Temescal DiD",
     "Cross-Validation",
+    "Policy Review",
     "Policy Simulator",
 ])
 
@@ -178,16 +179,26 @@ if page == "Overview":
     st.subheader("Model Summary")
     summary_df = pd.DataFrame({
         "Model": ["1A: Total Crime Rate", "1C: Violent Crime Rate",
-                   "2A: Property Values", "2C: 100 Van Ness DiD"],
-        "Method": ["OLS (HC1)", "OLS (HC1)", "OLS (HC1)", "DiD (OLS)"],
-        "R²": [f"{m1a.rsquared:.3f}", f"{m1c.rsquared:.3f}",
-               f"{m2a.rsquared:.3f}", f"{m2c.rsquared:.3f}"],
-        "N": [int(m1a.nobs), int(m1c.nobs), int(m2a.nobs), int(m2c.nobs)],
+                   "2A: Property Values", "2C: 100 Van Ness DiD",
+                   "Temescal DiD: Total Crime", "Temescal DiD: Property Crime",
+                   "Temescal DiD: Violent Crime"],
+        "Method": ["OLS (HC1)", "OLS (HC1)", "OLS (HC1)", "DiD (OLS)",
+                    "DiD (OLS)", "DiD (OLS)", "DiD (OLS)"],
+        "R² / DiD": [f"{m1a.rsquared:.3f}", f"{m1c.rsquared:.3f}",
+               f"{m2a.rsquared:.3f}", f"{m2c.rsquared:.3f}",
+               f"+{m_tem.params['treated_x_post']:.0f}/yr",
+               f"+{m_prop.params['treated_x_post']:.0f}/yr",
+               f"+{m_viol.params['treated_x_post']:.0f}/yr"],
+        "N": [int(m1a.nobs), int(m1c.nobs), int(m2a.nobs), int(m2c.nobs),
+              int(m_tem.nobs), int(m_prop.nobs), int(m_viol.nobs)],
         "Key Finding": [
             f"Income (coef={m1a.params['log_income']:.1f}***) reduces crime",
-            f"Income & racial composition drive violent crime",
-            f"Income (+), crime (−) drive values",
-            f"Van Ness values grew 13.7% slower***",
+            "Income & racial composition drive violent crime",
+            "Income (+), crime (-) drive values",
+            "Van Ness values grew 13.7% slower***",
+            "Upzoning increased total crime (p=0.004)**",
+            "Property crime drove the increase (p=0.002)**",
+            "No significant change in violent crime (p=0.89)",
         ],
     })
     st.dataframe(summary_df, use_container_width=True, hide_index=True)
@@ -609,6 +620,217 @@ elif page == "Policy Simulator":
     if income > 150000:
         st.success("High income is the strongest crime reducer — but income can't simply "
                    "be legislated. It reflects decades of investment and structural advantage.")
+
+
+# ══════════════════════════════════════════════
+# PAGE: POLICY REVIEW
+# ══════════════════════════════════════════════
+
+elif page == "Policy Review":
+    st.title("Policy Review")
+    st.markdown("""
+    Each "Bring SF Back" policy targets a specific urban challenge but creates ripple effects
+    across housing, public safety, and transit. Below we link each policy to the specific
+    analyses that measure its impacts — and identify where those impacts create tradeoffs.
+    """)
+
+    st.markdown("---")
+
+    # ── POLICY 1: FAMILY ZONING / UPZONING ──
+    st.subheader("Policy 1: Upzoning and Densification")
+
+    st.markdown("""
+    **What it is**: At the end of 2014, Oakland adopted a housing element (2015-2023) focusing
+    on upzoning and densification — enabling taller buildings and denser communities in areas
+    previously zoned for single-family housing. Temescal, once an area of primarily single-family
+    bungalows, transitioned into a popular, dense urban-suburban area with a high percentage of renters.
+
+    **Why Oakland**: Similar urban environment, inequality patterns, and crime dynamics to SF —
+    serves as a model for what SF upzoning policies could produce.
+    """)
+
+    st.markdown("**Linked Analyses:**")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**Public Safety Impact**")
+        st.markdown("""
+        - **Analysis**: Temescal DiD (Oakland crime data, 2012-2023)
+        - **Treatment**: Temescal (upzoned) vs Laurel/Dimond (control)
+        - **Finding**: +602 property crimes/year (p=0.002), no change in violent crime (p=0.89)
+        - **Interpretation**: Upzoning attracted opportunity crime (theft, burglary, vehicle break-ins)
+          tied to increased density and foot traffic — not interpersonal violence
+        """)
+
+    with col2:
+        st.markdown("**Housing Value Impact**")
+        st.markdown("""
+        - **Analysis**: SOMA vs Potrero Hill DiD (Model 2B)
+        - **Treatment**: SOMA (densified with SOMA Grand 2009, NEMA 2014) vs Potrero Hill
+          (primarily single-family, no densification shift)
+        - **Finding**: SOMA vs Potrero Hill coefficient was not statistically significant (p=0.146)
+        - **Interpretation**: Large-scale residential development in SOMA did not produce a
+          significantly different housing value trajectory compared to Potrero Hill
+        """)
+
+    with st.expander("Regression evidence supporting this policy review"):
+        st.markdown(f"""
+        - **Model 1A** (SF crime regression): density coefficient = +{m1a.params['density']:.2f}
+          (p={m1a.pvalues['density']:.3f}) — density is associated with higher crime rates,
+          consistent with the Temescal causal finding
+        - **Model 2A** (SF housing regression): density coefficient = +{m2a.params['density']:.4f}
+          (p={m2a.pvalues['density']:.3f}) — density effect on values is positive but not
+          individually significant with controls
+        - **Temescal parallel trends**: validated (p=0.56), confirming the DiD is credible
+        """)
+
+    st.markdown("---")
+
+    # ── POLICY 2: OFFICE TO HOUSING CONVERSION ──
+    st.subheader("Policy 2: Downtown Office-to-Housing Conversion")
+
+    st.markdown("""
+    **What it is**: Conversion of office space to residential housing has been rare in SF,
+    but 100 Van Ness — completed in 2015 — is the prime example. The former office tower at
+    the intersection of Hayes Valley and Civic Center was converted into 399 residential units.
+
+    **Why it matters**: As SF's downtown faces high office vacancy post-pandemic, this policy
+    is increasingly relevant. 100 Van Ness provides a case study of what happens when you add
+    hundreds of residents to a commercial corridor.
+    """)
+
+    st.markdown("**Linked Analyses:**")
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("**Housing Value Impact**")
+        st.markdown(f"""
+        - **Analysis**: 100 Van Ness DiD (Model 2C)
+        - **Treatment**: Hayes Valley / Civic Center vs rest of SF
+        - **Finding**: DiD = {m2c.params['van_ness_x_post']:.3f} (p<0.001***)
+        - **Interpretation**: Property values near 100 Van Ness grew 13.7% slower than the rest
+          of SF — the conversion moderated surrounding price growth
+        """)
+
+    with col2:
+        st.markdown("**Transit Impact**")
+        st.markdown("""
+        - **Analysis**: Model 3 — Transit Reliability (data collection in progress)
+        - **Route**: 49-Van Ness, starting at Van Ness & Market
+        - **Question**: How did adding ~400 residents to the Van Ness corridor impact Muni
+          headways? Does location north vs south of Market affect who bears the burden?
+        - **Equity angle**: Neighborhoods south of Market are generally lower income and
+          working class; north of Market income increases (Russian Hill, Cow Hollow)
+        - **Status**: Actively collecting real-time headway data via 511 API
+        """)
+
+    with col3:
+        st.markdown("**Public Safety Impact**")
+        st.markdown(f"""
+        - **Analysis**: Model 1A — Crime regression
+        - **Hospitality zone indicator** captures the downtown commercial area
+          around 100 Van Ness
+        - **Finding**: Hospitality zone = +{m1a.params['in_hospitality_zone']:.0f} crimes
+          per 1,000 residents (p<0.001***)
+        - **Context**: Adding residents to high-crime commercial corridors exposes
+          them to elevated crime rates
+        """)
+
+    with st.expander("Regression evidence supporting this policy review"):
+        st.markdown(f"""
+        - **Model 2C**: van_ness_x_post = {m2c.params['van_ness_x_post']:.4f} (p<0.001) —
+          statistically significant slowdown in value growth
+        - **Model 2A**: violent_rate coefficient = {m2a.params['violent_rate']:.4f} (p<0.001) —
+          violent crime suppresses property values, relevant to the high-crime downtown corridor
+        - **Caveat**: Treatment area also affected by COVID downtown impacts and homelessness crisis
+        """)
+
+    st.markdown("---")
+
+    # ── POLICY 3: HOSPITALITY SAFETY TASK FORCE ──
+    st.subheader("Policy 3: Downtown Hospitality Safety Task Force (Feb 2026)")
+
+    st.markdown("""
+    **What it is**: Launched in early February 2026, this task force aims to improve safety
+    in downtown SF through increased police presence in high-volume commercial areas. The
+    patrol zone covers the "hospitality zone" — from Bush St to South of Market, encompassing
+    Union Square, Yerba Buena, Moscone Center, and the Financial District.
+
+    **The equity question**: While increased police presence may improve visible indicators of
+    safety and potentially enhance visitor experience, its effects on residents are uneven.
+    Pre-existing disparities in perceived safety, combined with the potential for crime
+    displacement, suggest that the policy may not equitably improve safety outcomes across
+    communities.
+    """)
+
+    st.markdown("**Linked Analyses:**")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**What the regression tells us about this zone**")
+        st.markdown(f"""
+        - **Analysis**: Model 1A — the `in_hospitality_zone` indicator
+        - **Finding**: Neighborhoods in the hospitality zone already experience
+          +{m1a.params['in_hospitality_zone']:.0f} total crimes and
+          +{m1c.params['in_hospitality_zone']:.1f} violent crimes per 1,000 residents
+          compared to the rest of SF (both p<0.001)
+        - **Income effect**: Log income coefficient = {m1a.params['log_income']:.1f} —
+          the strongest crime predictor. The hospitality zone contains both high-income
+          (Financial District) and low-income (Tenderloin) neighborhoods, creating
+          stark disparities within the zone itself
+        """)
+
+    with col2:
+        st.markdown("**What to watch for (early indicators)**")
+        st.markdown("""
+        - **Crime frequency**: Compare Jan 2026 (pre-task force) to Feb-Apr 2026 (post)
+          within the hospitality zone vs surrounding neighborhoods
+        - **Crime type**: Is the task force reducing visible disorder crimes (drugs,
+          vandalism) or more serious offenses (assault, robbery)?
+        - **Time of day**: When are crimes occurring — are daytime tourist-hours
+          improving while nighttime stays the same?
+        - **Displacement**: Are crimes shifting to adjacent neighborhoods (SOMA,
+          Tenderloin edges, Civic Center) rather than actually decreasing?
+        - **Who benefits**: Tourist perceptions may improve (Super Bowl feedback)
+          while resident safety in surrounding lower-income neighborhoods may not
+        """)
+
+    with st.expander("Demographic context of the hospitality zone"):
+        st.markdown("""
+        The hospitality zone and surrounding neighborhoods include:
+
+        | Neighborhood | Character | Key demographic |
+        |---|---|---|
+        | Financial District / South Beach | High-income commercial | Young professionals, high median income |
+        | Tenderloin | Low-income residential | High poverty rate, large homeless population, diverse |
+        | South of Market (SOMA) | Mixed commercial/residential | Gentrifying, income disparity within neighborhood |
+        | Nob Hill | Upper-income residential | Older, wealthier, predominantly white |
+        | Chinatown | Dense residential/commercial | Lower income, predominantly Asian, elderly population |
+
+        The task force patrols the same zone — but the people living in and around it have
+        vastly different relationships to safety, policing, and public space. A policy that
+        makes Union Square feel safer for tourists may have very different implications for
+        Tenderloin residents.
+        """)
+
+    st.markdown("---")
+
+    # ── SYNTHESIS ──
+    st.subheader("Synthesis: The Tradeoff Framework")
+    st.markdown("""
+    Every policy we analyzed impacts multiple outcomes simultaneously:
+
+    | Policy | Housing | Public Safety | Transit | Equity |
+    |--------|---------|---------------|---------|--------|
+    | **Upzoning** (Temescal) | Values may rise with density | Property crime increases, violent crime unchanged | More riders on existing routes | New renters vs existing homeowners |
+    | **Office-to-Residential** (100 Van Ness) | Surrounding values grow slower | Residents exposed to high-crime commercial area | Increased ridership on Van Ness corridor | North vs south of Market disparity |
+    | **Hospitality Task Force** | Indirect — safety perception affects values | May reduce visible crime but risk displacement | N/A | Tourist safety vs resident safety; income/racial disparities in policing |
+
+    **The core finding**: There is no policy that improves all outcomes for all people.
+    Upzoning brings housing but attracts crime. Office conversions moderate prices but
+    strain transit. Policing improves visitor perception but may not equitably serve
+    residents. Effective policymaking requires acknowledging these tradeoffs explicitly.
+    """)
 
 
 # ══════════════════════════════════════════════
