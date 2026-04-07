@@ -19,7 +19,7 @@ warnings.filterwarnings("ignore")
 # ── Page config ───────────────────────────────
 st.set_page_config(
     page_title="Analytics for Good",
-    page_icon="📊",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -126,17 +126,17 @@ def coef_chart(model, keep_vars, labels, title, color):
 # SIDEBAR
 # ══════════════════════════════════════════════
 
-st.sidebar.title("📊 Analytics for Good")
+st.sidebar.title("Analytics for Good")
 st.sidebar.markdown("**Policy tradeoffs in SF & Oakland**")
 st.sidebar.markdown("---")
 
 page = st.sidebar.radio("Navigate", [
-    "🏠 Overview",
-    "🔫 Model 1: Crime Drivers",
-    "🏘️ Model 2: Housing Values",
-    "📐 Temescal DiD",
-    "🔗 Cross-Validation",
-    "🎛️ Policy Simulator",
+    "Overview",
+    "Model 1: Crime Drivers",
+    "Model 2: Housing Values",
+    "Temescal DiD",
+    "Cross-Validation",
+    "Policy Simulator",
 ])
 
 st.sidebar.markdown("---")
@@ -147,7 +147,7 @@ st.sidebar.caption("UC Berkeley — Spring 2026")
 # PAGE: OVERVIEW
 # ══════════════════════════════════════════════
 
-if page == "🏠 Overview":
+if page == "Overview":
     st.title("Bringing SF Back")
     st.subheader("Policy Analysis")
 
@@ -170,7 +170,7 @@ if page == "🏠 Overview":
                    delta="Density raises values")
     with col3:
         st.metric("Temescal DiD", "+612 crimes/yr",
-                   delta="Property crime ↑, Violent unchanged", delta_color="inverse")
+                   delta="Property crime up, Violent unchanged", delta_color="inverse")
 
     st.markdown("---")
 
@@ -209,7 +209,7 @@ if page == "🏠 Overview":
 # PAGE: MODEL 1 — CRIME DRIVERS
 # ══════════════════════════════════════════════
 
-elif page == "🔫 Model 1: Crime Drivers":
+elif page == "Model 1: Crime Drivers":
     st.title("Model 1: What Drives Crime Rates?")
     st.markdown("""
     Panel regression of **crime rates per 1,000 residents** across 41 SF neighborhoods
@@ -271,7 +271,7 @@ elif page == "🔫 Model 1: Crime Drivers":
 # PAGE: MODEL 2 — HOUSING VALUES
 # ══════════════════════════════════════════════
 
-elif page == "🏘️ Model 2: Housing Values":
+elif page == "Model 2: Housing Values":
     st.title("Model 2: What Drives Property Values?")
 
     tab1, tab2 = st.tabs(["Cross-Sectional Drivers", "100 Van Ness DiD"])
@@ -335,7 +335,7 @@ elif page == "🏘️ Model 2: Housing Values":
 # PAGE: TEMESCAL DiD
 # ══════════════════════════════════════════════
 
-elif page == "📐 Temescal DiD":
+elif page == "Temescal DiD":
     st.title("Temescal Upzoning: Difference-in-Differences")
     st.markdown("""
     **Treatment**: Temescal, Oakland (upzoned in 2015)
@@ -400,7 +400,7 @@ elif page == "📐 Temescal DiD":
 # PAGE: CROSS-VALIDATION
 # ══════════════════════════════════════════════
 
-elif page == "🔗 Cross-Validation":
+elif page == "Cross-Validation":
     st.title("Two Cities, One Story")
     st.markdown("""
     The SF regression (correlational) and Oakland DiD (causal) independently
@@ -462,13 +462,13 @@ elif page == "🔗 Cross-Validation":
     st.subheader("The Tradeoff")
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.success("**↑ Density → ↑ Property Values**\n\n"
+        st.success("**Density --> Higher Property Values**\n\n"
                     f"Housing regression coef: {m2a.params['density']:+.4f}***")
     with col2:
-        st.error("**↑ Density → ↑ Property Crime**\n\n"
+        st.error("**Density --> Higher Property Crime**\n\n"
                  f"Temescal DiD: +{m_prop.params['treated_x_post']:.0f} crimes/yr**")
     with col3:
-        st.warning("**↑ Density → = Violent Crime**\n\n"
+        st.warning("**Density --> No Change in Violent Crime**\n\n"
                    f"Temescal DiD: +{m_viol.params['treated_x_post']:.0f} (p={m_viol.pvalues['treated_x_post']:.2f}, n.s.)")
 
 
@@ -476,7 +476,7 @@ elif page == "🔗 Cross-Validation":
 # PAGE: POLICY SIMULATOR
 # ══════════════════════════════════════════════
 
-elif page == "🎛️ Policy Simulator":
+elif page == "Policy Simulator":
     st.title("Policy Tradeoff Simulator")
     st.markdown("""
     Adjust neighborhood characteristics and see predicted impacts on **crime**
@@ -490,7 +490,7 @@ elif page == "🎛️ Policy Simulator":
     col_input, col_spacer, col_output = st.columns([1, 0.1, 1.2])
 
     with col_input:
-        st.subheader("🎚️ Adjust Inputs")
+        st.subheader("Adjust Inputs")
 
         # Get baseline values (medians from data)
         c = crime_panel.dropna(subset=["density", "log_income"])
@@ -516,7 +516,7 @@ elif page == "🎛️ Policy Simulator":
         st.caption("*Sliders set to SF median values by default*")
 
     with col_output:
-        st.subheader("📈 Predicted Outcomes")
+        st.subheader("Predicted Outcomes")
 
         # Calculate predictions using Model 1A coefficients
         log_inc = np.log(income)
@@ -600,14 +600,14 @@ elif page == "🎛️ Policy Simulator":
     # Tradeoff callout
     st.markdown("---")
     if density > c["density"].median() * 1.3:
-        st.warning("⚠️ **Tradeoff alert**: High density is boosting predicted property "
+        st.warning("**Tradeoff alert**: High density is boosting predicted property "
                    "values but also increasing predicted crime. This is the core tension "
                    "policymakers face with upzoning.")
     if hosp_zone:
-        st.warning("⚠️ **Hospitality zone** adds significant crime — tourism and nightlife "
+        st.warning("**Hospitality zone** adds significant crime — tourism and nightlife "
                    "bring economic activity but also public safety costs.")
     if income > 150000:
-        st.success("✅ High income is the strongest crime reducer — but income can't simply "
+        st.success("High income is the strongest crime reducer — but income can't simply "
                    "be legislated. It reflects decades of investment and structural advantage.")
 
 
