@@ -132,11 +132,11 @@ st.sidebar.markdown("---")
 
 page = st.sidebar.radio("Navigate", [
     "Overview",
+    "Policy Review",
     "Model 1: Crime Drivers",
     "Model 2: Housing Values",
     "Temescal DiD",
     "Cross-Validation",
-    "Policy Review",
     "Policy Simulator",
 ])
 
@@ -175,33 +175,47 @@ if page == "Overview":
 
     st.markdown("---")
 
-    # Summary table
-    st.subheader("Model Summary")
-    summary_df = pd.DataFrame({
+    # Regression summary
+    st.subheader("Regression Models")
+    reg_df = pd.DataFrame({
         "Model": ["1A: Total Crime Rate", "1C: Violent Crime Rate",
-                   "2A: Property Values", "2C: 100 Van Ness DiD",
-                   "Temescal DiD: Total Crime", "Temescal DiD: Property Crime",
-                   "Temescal DiD: Violent Crime"],
-        "Method": ["OLS (HC1)", "OLS (HC1)", "OLS (HC1)", "DiD (OLS)",
-                    "DiD (OLS)", "DiD (OLS)", "DiD (OLS)"],
-        "R² / DiD": [f"{m1a.rsquared:.3f}", f"{m1c.rsquared:.3f}",
-               f"{m2a.rsquared:.3f}", f"{m2c.rsquared:.3f}",
-               f"+{m_tem.params['treated_x_post']:.0f}/yr",
-               f"+{m_prop.params['treated_x_post']:.0f}/yr",
-               f"+{m_viol.params['treated_x_post']:.0f}/yr"],
-        "N": [int(m1a.nobs), int(m1c.nobs), int(m2a.nobs), int(m2c.nobs),
-              int(m_tem.nobs), int(m_prop.nobs), int(m_viol.nobs)],
+                   "2A: Property Values"],
+        "Method": ["OLS (HC1)", "OLS (HC1)", "OLS (HC1)"],
+        "R²": [f"{m1a.rsquared:.3f}", f"{m1c.rsquared:.3f}",
+               f"{m2a.rsquared:.3f}"],
+        "N": [int(m1a.nobs), int(m1c.nobs), int(m2a.nobs)],
         "Key Finding": [
-            f"Income (coef={m1a.params['log_income']:.1f}***) reduces crime",
+            f"Income is strongest crime predictor (coef = {m1a.params['log_income']:.1f}***)",
             "Income & racial composition drive violent crime",
-            "Income (+), crime (-) drive values",
-            "Van Ness values grew 13.7% slower***",
-            "Upzoning increased total crime (p=0.004)**",
-            "Property crime drove the increase (p=0.002)**",
-            "No significant change in violent crime (p=0.89)",
+            "Income (+) and violent crime (-) drive values",
         ],
     })
-    st.dataframe(summary_df, use_container_width=True, hide_index=True)
+    st.dataframe(reg_df, use_container_width=True, hide_index=True)
+
+    # DiD case studies
+    st.subheader("Difference-in-Differences Case Studies")
+    did_df = pd.DataFrame({
+        "Case Study": ["100 Van Ness Conversion", "Temescal Upzoning",
+                        "Temescal Upzoning", "Temescal Upzoning"],
+        "Outcome": ["Property Values", "Total Crime",
+                     "Property Crime", "Violent Crime"],
+        "DiD Estimate": [
+            f"{m2c.params['van_ness_x_post']:.3f} (log $)",
+            f"+{m_tem.params['treated_x_post']:.0f} crimes/yr",
+            f"+{m_prop.params['treated_x_post']:.0f} crimes/yr",
+            f"+{m_viol.params['treated_x_post']:.0f} crimes/yr"],
+        "p-value": [
+            f"{m2c.pvalues['van_ness_x_post']:.4f}",
+            f"{m_tem.pvalues['treated_x_post']:.4f}",
+            f"{m_prop.pvalues['treated_x_post']:.4f}",
+            f"{m_viol.pvalues['treated_x_post']:.4f}"],
+        "Significant?": [
+            "Yes — values grew 13.7% slower",
+            "Yes — crime increased post-upzoning",
+            "Yes — property crime drove the increase",
+            "No — violent crime unchanged"],
+    })
+    st.dataframe(did_df, use_container_width=True, hide_index=True)
 
     st.markdown("---")
     st.subheader("Data Sources")
