@@ -147,9 +147,9 @@ st.sidebar.caption("UC Berkeley — Spring 2026")
 # PAGE: OVERVIEW
 # ══════════════════════════════════════════════
 
-if page == " Overview":
+if page == "🏠 Overview":
     st.title("Bringing SF Back")
-    st.subheader(" Policy Analysis")
+    st.subheader("Policy Analysis")
 
     st.markdown("""
     To what extent are local “Bring SF Back” policies improving quality of life for San Francisco residents, 
