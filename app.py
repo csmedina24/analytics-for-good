@@ -619,5 +619,5 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("""
 **Data**: SFPD, OPD, SF Assessor,\n Census ACS, 511 SF Bay
 
-**Methods**: OLS (HC1), DiD,\n Negative Binomial
+**Methods**: OLS (HC1), DiD
 """)
