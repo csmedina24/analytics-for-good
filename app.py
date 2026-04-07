@@ -147,13 +147,14 @@ st.sidebar.caption("UC Berkeley — Spring 2026")
 # PAGE: OVERVIEW
 # ══════════════════════════════════════════════
 
-if page == "🏠 Overview":
-    st.title("Analytics for Good")
-    st.subheader("Understanding Policy Tradeoffs in San Francisco & Oakland")
+if page == " Overview":
+    st.title("Bringing SF Back")
+    st.subheader(" Policy Analysis")
 
     st.markdown("""
-    Urban policy decisions **always involve tradeoffs**. Improving one outcome — housing
-    affordability, public safety, transit reliability — often comes at the cost of another.
+    To what extent are local “Bring SF Back” policies improving quality of life for San Francisco residents, 
+    and how do their measurable impacts on housing, transportation, and public safety compared to public narratives 
+    about the city’s recovery?
 
     This dashboard presents three regression models and multiple Difference-in-Differences
     case studies to understand **what really drives** outcomes in Bay Area communities.
