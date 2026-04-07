@@ -231,11 +231,11 @@ elif page == "Model 1: Crime Drivers":
     keep = ["density", "log_median_value", "pct_residential",
             "log_income", "pct_white", "pct_hispanic", "pct_black",
             "pct_asian", "in_hospitality_zone"]
-    labels = ["Housing Density", "Log Property Value", "% Residential",
-              "Log Household Income", "% White", "% Hispanic", "% Black",
-              "% Asian", "Hospitality Zone"]
+    labels = ["Housing Density", "Property Value (log)", "% Residential Land",
+              "Household Income (log)", "% White", "% Hispanic", "% Black",
+              "% Asian", "In Hospitality Zone"]
 
-    tab1, tab2, tab3 = st.tabs(["Total Crime", "Violent Crime", "Raw Data"])
+    tab1, tab2, tab3 = st.tabs(["Total Crime", "Violent Crime", "Data"])
 
     with tab1:
         st.subheader("Model 1A: Total Crime Rate")
@@ -246,7 +246,7 @@ elif page == "Model 1: Crime Drivers":
 
         with st.expander("Interpretation"):
             st.markdown(f"""
-            - **Log Household Income** has the strongest effect: a 1% increase in
+            - **Household Income (log)** has the strongest effect: a 1% increase in
               neighborhood income is associated with **{m1a.params['log_income']:.1f}
               fewer crimes** per 1,000 residents (p<0.001)
             - **Hospitality Zone** neighborhoods see **+{m1a.params['in_hospitality_zone']:.0f}
@@ -271,11 +271,35 @@ elif page == "Model 1: Crime Drivers":
             """)
 
     with tab3:
-        st.subheader("Crime Panel Data")
-        st.dataframe(crime_panel[["analysis_neighborhood", "year", "crime_rate",
-                                   "violent_rate", "property_rate", "density",
-                                   "median_hh_income"]].round(2),
-                      use_container_width=True, hide_index=True)
+        col_data, col_dict = st.columns([1.3, 1])
+
+        with col_data:
+            st.subheader("Crime Panel Data")
+            display_crime = crime_panel[["analysis_neighborhood", "year", "crime_rate",
+                                         "violent_rate", "property_rate", "density",
+                                         "median_hh_income", "pct_residential",
+                                         "in_hospitality_zone"]].copy()
+            display_crime.columns = ["Neighborhood", "Year", "Total Crime Rate",
+                                      "Violent Crime Rate", "Property Crime Rate",
+                                      "Housing Density", "Median Household Income",
+                                      "% Residential Land", "In Hospitality Zone"]
+            st.dataframe(display_crime.round(2), use_container_width=True, hide_index=True)
+
+        with col_dict:
+            st.subheader("Variable Definitions")
+            st.markdown("""
+            | Variable | What It Means |
+            |----------|--------------|
+            | **Neighborhood** | SF Analysis Neighborhood name |
+            | **Year** | Calendar year (2018-2023) |
+            | **Total Crime Rate** | Total reported crimes per 1,000 residents |
+            | **Violent Crime Rate** | Violent crimes (assault, robbery, homicide) per 1,000 residents |
+            | **Property Crime Rate** | Property crimes (theft, burglary, vandalism) per 1,000 residents |
+            | **Housing Density** | Average housing units per parcel — higher means more multi-unit buildings |
+            | **Median Household Income** | Median annual household income from Census ACS ($) |
+            | **% Residential Land** | Share of parcels classified as residential (0 to 1) |
+            | **In Hospitality Zone** | 1 = neighborhood falls within SF's downtown hospitality patrol zone; 0 = outside |
+            """)
 
 
 # ══════════════════════════════════════════════
@@ -293,9 +317,9 @@ elif page == "Model 2: Housing Values":
 
         keep_2a = ["density", "pct_residential", "building_age",
                     "median_stories", "crime_rate", "violent_rate", "log_income"]
-        labels_2a = ["Housing Density", "% Residential", "Building Age",
-                      "Median Stories", "Total Crime Rate", "Violent Crime Rate",
-                      "Log Household Income"]
+        labels_2a = ["Housing Density", "% Residential Land", "Building Age (years)",
+                      "Building Height (stories)", "Total Crime Rate", "Violent Crime Rate",
+                      "Household Income (log)"]
 
         fig = coef_chart(m2a, keep_2a, labels_2a,
                          "What Drives Property Values?", PALETTE[2])
@@ -321,8 +345,8 @@ elif page == "Model 2: Housing Values":
 
         keep_2c = ["van_ness_treated", "post_van_ness", "van_ness_x_post",
                     "density", "building_age", "crime_rate"]
-        labels_2c = ["Treatment Area", "Post-2015", "DiD: Treatment × Post",
-                      "Housing Density", "Building Age", "Crime Rate"]
+        labels_2c = ["Near 100 Van Ness (treatment)", "After 2015", "DiD Effect (treatment x post)",
+                      "Housing Density", "Building Age (years)", "Total Crime Rate"]
 
         fig = coef_chart(m2c, keep_2c, labels_2c,
                          "100 Van Ness Conversion: Effect on Property Values", PALETTE[4])
@@ -404,7 +428,31 @@ elif page == "Temescal DiD":
     st.markdown("---")
 
     with st.expander("Monthly Panel Data"):
-        st.dataframe(temescal_mo, use_container_width=True, hide_index=True)
+        col_data, col_dict = st.columns([1.3, 1])
+
+        with col_data:
+            display_tem = temescal_mo.copy()
+            display_tem.columns = ["Neighborhood", "Year", "Month", "Is Treatment",
+                                    "Post-Upzoning", "Treatment x Post", "Total Crime",
+                                    "Violent Crime", "Property Crime", "Drug Crime", "Time Index"]
+            st.dataframe(display_tem, use_container_width=True, hide_index=True)
+
+        with col_dict:
+            st.markdown("""
+            **Variable Definitions**
+
+            | Variable | What It Means |
+            |----------|--------------|
+            | **Neighborhood** | Temescal (treatment) or Laurel/Dimond (control) |
+            | **Is Treatment** | 1 = Temescal (upzoned); 0 = control group |
+            | **Post-Upzoning** | 1 = after 2015 upzoning; 0 = before |
+            | **Treatment x Post** | The DiD interaction — 1 only for Temescal after 2015 |
+            | **Total Crime** | Total reported crimes that month |
+            | **Violent Crime** | Assault, robbery, homicide, domestic violence |
+            | **Property Crime** | Theft, burglary, vehicle theft, vandalism |
+            | **Drug Crime** | Drug-related offenses |
+            | **Time Index** | Sequential month number (1 = first month in data) |
+            """)
 
 
 # ══════════════════════════════════════════════
@@ -506,25 +554,37 @@ elif page == "Policy Simulator":
         # Get baseline values (medians from data)
         c = crime_panel.dropna(subset=["density", "log_income"])
 
-        density = st.slider("Housing Density (units/parcel)",
-                             min_value=0.5, max_value=30.0,
-                             value=float(c["density"].median()), step=0.5)
+        density = st.slider(
+            "Housing Density",
+            min_value=0.5, max_value=30.0,
+            value=float(c["density"].median()), step=0.5,
+            help="Average housing units per parcel. Higher = more apartments/condos, lower = single-family homes.")
 
-        income = st.slider("Median Household Income ($)",
-                            min_value=30000, max_value=250000,
-                            value=int(np.exp(c["log_income"].median())), step=5000)
+        income = st.slider(
+            "Median Household Income",
+            min_value=30000, max_value=250000,
+            value=int(np.exp(c["log_income"].median())), step=5000,
+            format="$%d",
+            help="Median annual household income in the neighborhood (from Census ACS).")
 
-        pct_res = st.slider("% Residential Land Use",
-                             min_value=0.0, max_value=1.0,
-                             value=float(c["pct_residential"].median()), step=0.05)
+        pct_res = st.slider(
+            "Share of Residential Land",
+            min_value=0.0, max_value=1.0,
+            value=float(c["pct_residential"].median()), step=0.05,
+            format="%.0f%%",
+            help="Proportion of parcels used for housing (vs commercial/industrial). 1.0 = fully residential.")
 
-        hosp_zone = st.toggle("In Hospitality / Tourism Zone", value=False)
+        hosp_zone = st.toggle("Located in Hospitality Zone", value=False,
+            help="SF's downtown tourism/nightlife patrol zone (FiDi, Tenderloin, Union Square, SOMA).")
 
-        prop_value = st.slider("Median Property Value ($)",
-                                min_value=200000, max_value=3000000,
-                                value=int(np.exp(c["log_median_value"].median())), step=50000)
+        prop_value = st.slider(
+            "Median Property Value",
+            min_value=200000, max_value=3000000,
+            value=int(np.exp(c["log_median_value"].median())), step=50000,
+            format="$%d",
+            help="Median assessed property value in the neighborhood from SF Assessor data.")
 
-        st.caption("*Sliders set to SF median values by default*")
+        st.caption("*All sliders start at the SF neighborhood median*")
 
     with col_output:
         st.subheader("Predicted Outcomes")
