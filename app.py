@@ -15,7 +15,9 @@ warnings.filterwarnings("ignore")
 
 st.set_page_config(page_title="Bringing SF Back", layout="wide")
 sns.set_theme(style="whitegrid", font_scale=1.05)
-PALETTE = ["#2563EB", "#DC2626", "#16A34A", "#F59E0B", "#8B5CF6"]
+BLUE = "#2563EB"
+RED = "#DC2626"
+GREEN = "#16A34A"
 
 
 # ── DATA + MODELS ─────────────────────────────
@@ -27,22 +29,36 @@ def load_and_fit():
     c = crime.dropna(subset=["crime_rate", "density", "log_income"])
     h = housing.dropna(subset=["log_income", "crime_rate"])
 
-    m1a = smf.ols("crime_rate ~ density + log_median_value + pct_residential + log_income + pct_white + pct_hispanic + pct_black + pct_asian + in_hospitality_zone + C(year)", data=c).fit(cov_type="HC1")
-    m1c = smf.ols("violent_rate ~ density + log_median_value + pct_residential + log_income + pct_white + pct_hispanic + pct_black + pct_asian + in_hospitality_zone + C(year)", data=c).fit(cov_type="HC1")
-    m2a = smf.ols("log_median_value ~ density + pct_residential + building_age + median_stories + crime_rate + violent_rate + log_income + C(year)", data=h).fit(cov_type="HC1")
+    m_total = smf.ols(
+        "crime_rate ~ density + log_median_value + pct_residential "
+        "+ log_income + in_hospitality_zone + C(year)", data=c
+    ).fit(cov_type="HC1")
 
-    return crime, housing, m1a, m1c, m2a
+    m_violent = smf.ols(
+        "violent_rate ~ density + log_median_value + pct_residential "
+        "+ log_income + in_hospitality_zone + C(year)", data=c
+    ).fit(cov_type="HC1")
 
-crime_panel, housing_panel, m1a, m1c, m2a = load_and_fit()
+    m_housing = smf.ols(
+        "log_median_value ~ density + pct_residential + building_age "
+        "+ median_stories + crime_rate + violent_rate + log_income + C(year)",
+        data=h
+    ).fit(cov_type="HC1")
+
+    return crime, housing, m_total, m_violent, m_housing
+
+crime_panel, housing_panel, m_total, m_violent, m_housing = load_and_fit()
+
 
 def sig_stars(p):
-    return "***" if p < 0.001 else "**" if p < 0.01 else "*" if p < 0.05 else "n.s."
+    return "***" if p < 0.001 else "**" if p < 0.01 else "*" if p < 0.05 else ""
+
 
 def coef_chart(model, keep_vars, labels, title, color):
     coefs = model.params[keep_vars]
     ci = model.conf_int().loc[keep_vars]
     errs = np.array([coefs - ci[0], ci[1] - coefs])
-    fig, ax = plt.subplots(figsize=(8, max(3.2, len(keep_vars) * 0.5)))
+    fig, ax = plt.subplots(figsize=(7, max(2.8, len(keep_vars) * 0.55)))
     ax.barh(range(len(keep_vars)), coefs.values, xerr=errs, height=0.5,
             color=color, alpha=0.85, edgecolor="white", capsize=4,
             error_kw={"linewidth": 1.5, "color": "#374151"})
@@ -50,114 +66,75 @@ def coef_chart(model, keep_vars, labels, title, color):
     ax.set_yticks(range(len(keep_vars)))
     ax.set_yticklabels(labels)
     ax.set_xlabel("Coefficient (95% CI)")
-    ax.set_title(title, fontweight="bold")
+    ax.set_title(title, fontweight="bold", fontsize=13)
     for i, var in enumerate(keep_vars):
-        pval = model.pvalues[var]
-        star = sig_stars(pval)
-        if star != "n.s.":
+        star = sig_stars(model.pvalues[var])
+        if star:
             x_pos = coefs.values[i] + errs[1][i] + abs(coefs.values).max() * 0.03
-            ax.text(x_pos, i, star, va="center", fontsize=11, fontweight="bold", color="#DC2626")
+            ax.text(x_pos, i, star, va="center", fontsize=11,
+                    fontweight="bold", color="#DC2626")
     ax.invert_yaxis()
     plt.tight_layout()
     return fig
 
 
-# ── LAYOUT ────────────────────────────────────
+# ── PAGE ──────────────────────────────────────
 st.title("Bringing SF Back")
-st.markdown("How do local policies impact **housing, public safety, and transit** for SF residents?")
-st.markdown("---")
 
-tab_crime, tab_housing, tab_policy, tab_data = st.tabs([
+tab1, tab2, tab3, tab4 = st.tabs([
     "Crime Regression", "Housing Regression", "Policy Review", "Data + Variables"
 ])
 
 
-# ── TAB 1: CRIME ──────────────────────────────
-with tab_crime:
-    st.subheader("What Drives Crime Rates?")
-    st.markdown(f"OLS | 41 SF neighborhoods | 2018-2023 | R² = {m1a.rsquared:.3f}")
-
-    keep = ["density", "log_median_value", "pct_residential", "log_income",
-            "pct_white", "pct_hispanic", "pct_black", "pct_asian", "in_hospitality_zone"]
-    labels = ["Housing Density", "Property Value (log)", "% Residential Land",
-              "Household Income (log)", "% White", "% Hispanic", "% Black",
-              "% Asian", "In Hospitality Zone"]
+# ── CRIME ─────────────────────────────────────
+with tab1:
+    keep = ["density", "log_median_value", "pct_residential",
+            "log_income", "in_hospitality_zone"]
+    labels = ["Housing Density", "Property Value (log)",
+              "% Residential Land", "Household Income (log)",
+              "In Hospitality Zone"]
 
     col1, col2 = st.columns(2)
     with col1:
-        fig = coef_chart(m1a, keep, labels, "Total Crime Rate", PALETTE[0])
+        fig = coef_chart(m_total, keep, labels,
+                         f"Total Crime Rate  |  R² = {m_total.rsquared:.3f}", BLUE)
         st.pyplot(fig)
         plt.close()
     with col2:
-        fig = coef_chart(m1c, keep, labels, "Violent Crime Rate", PALETTE[1])
+        fig = coef_chart(m_violent, keep, labels,
+                         f"Violent Crime Rate  |  R² = {m_violent.rsquared:.3f}", RED)
         st.pyplot(fig)
         plt.close()
 
-    st.markdown("---")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Total Crime R²", f"{m1a.rsquared:.3f}")
-    with col2:
-        st.metric("Violent Crime R²", f"{m1c.rsquared:.3f}")
-    with col3:
-        st.metric("Observations", f"{int(m1a.nobs)}")
 
+# ── HOUSING ───────────────────────────────────
+with tab2:
+    keep_h = ["density", "pct_residential", "building_age",
+              "median_stories", "crime_rate", "violent_rate", "log_income"]
+    labels_h = ["Housing Density", "% Residential Land",
+                "Building Age (years)", "Building Height (stories)",
+                "Total Crime Rate", "Violent Crime Rate",
+                "Household Income (log)"]
 
-# ── TAB 2: HOUSING ────────────────────────────
-with tab_housing:
-    st.subheader("What Drives Property Values?")
-    st.markdown(f"OLS | Log median assessed value | 2018-2023 | R² = {m2a.rsquared:.3f}")
-
-    keep_2a = ["density", "pct_residential", "building_age", "median_stories",
-                "crime_rate", "violent_rate", "log_income"]
-    labels_2a = ["Housing Density", "% Residential Land", "Building Age (years)",
-                  "Building Height (stories)", "Total Crime Rate", "Violent Crime Rate",
-                  "Household Income (log)"]
-
-    fig = coef_chart(m2a, keep_2a, labels_2a, "Property Value Drivers", PALETTE[2])
+    fig = coef_chart(m_housing, keep_h, labels_h,
+                     f"Property Value Drivers  |  R² = {m_housing.rsquared:.3f}", GREEN)
     st.pyplot(fig)
     plt.close()
 
-    st.markdown("---")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("R²", f"{m2a.rsquared:.3f}")
-    with col2:
-        st.metric("Observations", f"{int(m2a.nobs)}")
-    with col3:
-        st.metric("Strongest Predictor", "Household Income")
 
-
-# ── TAB 3: POLICY REVIEW ─────────────────────
-with tab_policy:
-    st.subheader("Policy Tradeoff Summary")
-    st.markdown("Each policy creates ripple effects across multiple outcomes.")
-
+# ── POLICY REVIEW ─────────────────────────────
+with tab3:
     st.markdown("""
-    | Policy | Housing Impact | Safety Impact | Transit Impact |
-    |--------|--------------|---------------|----------------|
-    | **Upzoning / Densification** | Values may rise with density | Property crime increases, violent crime unchanged | More riders on existing routes |
-    | **Office-to-Residential** (100 Van Ness) | Surrounding values grow slower | Residents exposed to high-crime commercial area | Increased ridership, equity concern |
+    | Policy | Housing | Safety | Transit |
+    |--------|---------|--------|---------|
+    | **Upzoning** (Temescal, Oakland) | Values may rise with density | Property crime up, violent unchanged | More riders on existing routes |
+    | **Office-to-Residential** (100 Van Ness) | Surrounding values grew slower | Residents exposed to high-crime area | Ridership up, equity concern N vs S of Market |
     | **Hospitality Task Force** (Feb 2026) | Safety perception affects values | May reduce visible crime, risk displacement | N/A |
     """)
 
-    st.markdown("---")
 
-    st.markdown("**Policy 1: Upzoning**")
-    st.markdown("Oakland upzoned Temescal in 2015. Property crime rose significantly; violent crime did not change.")
-
-    st.markdown("**Policy 2: Office-to-Housing Conversion**")
-    st.markdown("100 Van Ness (2015) converted office to 399 units. Surrounding property values grew slower than rest of SF.")
-
-    st.markdown("**Policy 3: Hospitality Task Force**")
-    st.markdown(f"Downtown hospitality zone already sees +{m1a.params['in_hospitality_zone']:.0f} crimes per 1,000 residents. "
-                "Increased policing may reduce visible crime but risks displacement to adjacent neighborhoods.")
-
-
-# ── TAB 4: DATA + VARIABLES ───────────────────
-with tab_data:
-    st.subheader("Data + Variable Definitions")
-
+# ── DATA + VARIABLES ──────────────────────────
+with tab4:
     col_data, col_dict = st.columns([1.3, 1])
 
     with col_data:
@@ -179,22 +156,11 @@ with tab_data:
         | **Violent Crime Rate** | Assault, robbery, homicide per 1,000 |
         | **Property Crime Rate** | Theft, burglary, vandalism per 1,000 |
         | **Housing Density** | Avg housing units per parcel |
-        | **Median HH Income** | Median household income ($, Census ACS) |
+        | **Median HH Income** | Median household income ($) |
         | **% Residential** | Share of parcels zoned residential (0-1) |
-        | **Hospitality Zone** | 1 = in downtown patrol zone; 0 = outside |
+        | **Hospitality Zone** | 1 = in downtown patrol zone |
         | **Property Value (log)** | Log of median assessed value |
         | **Household Income (log)** | Log of median household income |
-        | **Building Age** | Median year built subtracted from current year |
+        | **Building Age** | Years since median year built |
         | **Building Height** | Median number of stories |
         """)
-
-    st.markdown("---")
-    st.markdown("""
-    | Dataset | Source | Coverage |
-    |---------|--------|----------|
-    | Crime (SF) | SFPD Incident Reports | 2018-2023 |
-    | Crime (Oakland) | OPD CrimeWatch | 2012-2023 |
-    | Housing | SF Assessor | 2018-2023 |
-    | Demographics | Census ACS 5-Year | 2013-2023 |
-    | Transit | 511 SF Bay API | Real-time |
-    """)
