@@ -27,6 +27,7 @@ def load_and_fit():
     crime = pd.read_csv("data/crime_panel.csv")
     housing = pd.read_csv("data/housing_panel.csv")
     temescal = pd.read_csv("data/temescal_yearly_panel.csv")
+    temescal_pre_pan = temescal[temescal['year'] <= 2020]
 
     c = crime.dropna(subset=["crime_rate", "density", "log_income"])
     h = housing.dropna(subset=["log_income", "crime_rate"])
@@ -53,11 +54,11 @@ def load_and_fit():
         data=housing.dropna(subset=["crime_rate"])
     ).fit(cov_type="HC1")
 
-    m_tem = smf.ols("total_crime ~ treated + post + treated_x_post", data=temescal).fit(cov_type="HC1")
-    m_prop = smf.ols("property ~ treated + post + treated_x_post", data=temescal).fit(cov_type="HC1")
-    m_viol = smf.ols("violent ~ treated + post + treated_x_post", data=temescal).fit(cov_type="HC1")
+    m_tem = smf.ols("total_crime ~ treated + post + treated_x_post", data=temescal_pre_pan).fit(cov_type="HC1")
+    m_prop = smf.ols("property ~ treated + post + treated_x_post", data=temescal_pre_pan).fit(cov_type="HC1")
+    m_viol = smf.ols("violent ~ treated + post + treated_x_post", data=temescal_pre_pan).fit(cov_type="HC1")
 
-    return crime, housing, temescal, m_total, m_violent, m_housing, m_van_ness, m_tem, m_prop, m_viol
+    return crime, housing, temescal_pre_pan, m_total, m_violent, m_housing, m_van_ness, m_tem, m_prop, m_viol
 
 crime_panel, housing_panel, temescal_yr, m_total, m_violent, m_housing, m_van_ness, m_tem, m_prop, m_viol = load_and_fit()
 
@@ -135,7 +136,10 @@ with tab1:
                   delta=f"p={m_prop.pvalues['treated_x_post']:.3f}")
         st.metric("Violent Crime", f"+{m_viol.params['treated_x_post']:.0f}/yr",
                   delta=f"p={m_viol.pvalues['treated_x_post']:.2f} (n.s.)")
-
+    
+    st.markdown("In 2021, Temescal, Oakland expereinced a signifigant increase in crime, becoming one of the most violent years in oaklands history. 
+    While upzoning may have contributed indirectly, post-pandemic aftermath and iinflux in illegal firearms during this time are leading factors for this uptick.
+    for this reason, we have only look at the years leading up to the pandemic.")
     st.markdown("---")
     st.markdown("**What factors explain this?** The crime regression shows which neighborhood characteristics drive crime rates:")
 
