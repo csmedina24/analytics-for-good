@@ -319,9 +319,17 @@ with tab2:
     st.markdown("---")
 
     # ── Transit Impact ────────────────────────
-    st.markdown("### Transit Reliability: Did 399 New Residents Strain Muni?")
+    st.markdown("### Transit Reliability: A Confounded Story")
     st.markdown("100 Van Ness sits on the Van Ness corridor (Route 49) in District 6. "
-                "The SF City Survey tracks how residents rate Muni reliability over time.")
+                "The SF City Survey tracks how residents rate Muni reliability over time -- "
+                "but a major confounder emerged at the same time as the conversion.")
+
+    st.info("**Important context:** SFMTA launched the "
+            "[Muni Forward initiative](https://www.sfmta.com/press-releases/muni-forward-most-significant-service-improvements-decades) "
+            "on April 25, 2015 -- the same year 100 Van Ness opened. "
+            "Muni Forward increased frequency on 11 routes, extended hours on 7 Express routes, "
+            "and rebranded 6 Limited routes as 'Rapid.' Any reliability gains post-2015 are "
+            "almost certainly driven by this city-wide service overhaul, not the conversion itself.")
 
     # Muni reliability trend with 2015 line
     col1, col2 = st.columns([2.5, 1])
@@ -332,14 +340,15 @@ with tab2:
                 marker="o", linewidth=2.5, markersize=7, label="Muni Reliability")
         ax.plot(muni_trend["year"], muni_trend["safety"], color=RED,
                 marker="s", linewidth=2, markersize=6, alpha=0.7, label="Muni Safety")
-        ax.axvline(2015, color="#6B7280", linewidth=2, linestyle="--", alpha=0.7)
-        ax.annotate("100 Van Ness opens (2015)", xy=(2015, ax.get_ylim()[1] * 0.92),
-                    fontsize=10, ha="center", color="#6B7280", fontweight="bold")
+        ax.axvline(2015, color=GREEN, linewidth=2, linestyle="--", alpha=0.8)
+        ax.annotate("Muni Forward launches\n& 100 Van Ness opens",
+                    xy=(2015, 2.25),
+                    fontsize=9, ha="center", color=GREEN, fontweight="bold")
         ax.set_xlabel("Year")
         ax.set_ylabel("Avg Rating (1-5)")
         ax.set_ylim(2, 4.2)
         ax.set_title("SF Resident Perceptions of Muni (City Survey)", fontweight="bold")
-        ax.legend(frameon=True)
+        ax.legend(frameon=True, loc="upper left")
         plt.tight_layout()
         st.pyplot(fig)
         plt.close()
@@ -351,8 +360,8 @@ with tab2:
         st.metric("Pre-2015 Avg", f"{pre_rel:.2f}/5")
         st.metric("Post-2015 Avg", f"{post_rel:.2f}/5",
                   delta=f"{rel_change:+.1f}%")
-        st.caption("Reliability actually improved after 2015, peaking in 2015-2017 "
-                   "before declining by 2019")
+        st.caption("Reliability improved city-wide after 2015, but we cannot isolate "
+                   "the effect of 100 Van Ness from Muni Forward's service expansion.")
 
     st.markdown("---")
 
@@ -452,16 +461,55 @@ with tab2:
     plt.close()
 
     st.markdown("---")
-    st.markdown("**Key takeaways:**")
+
+    # ── Post-2023 Service Cuts ────────────────
+    st.markdown("### The Story Since 2023: From Expansion to Contraction")
+
+    st.warning("**Budget crisis reverses the trend.** SFMTA faces a **$307 million deficit** "
+               "starting July 2026. In **summer 2025**, the agency cut service to 5 lines "
+               "(including the 21 Hayes and shortening the 31 Balboa). If two pending tax "
+               "ballot measures fail, **up to 20 more lines could be eliminated by September 2027**, "
+               "with regular service ending at 9 PM and frequency reductions on surviving routes. "
+               "([SF Standard, Mar 2026](https://sfstandard.com/2026/03/29/muni-could-cut-20-lines-next-year-if-ballot-measures-don-t-pass-riders-have-idea/))")
+
     col1, col2 = st.columns(2)
+
     with col1:
-        st.markdown("**No transit strain from conversion** -- Muni reliability perceptions "
-                    "*improved* city-wide after 2015. District 6 (100 Van Ness) saw one of "
-                    "the largest gains, suggesting the conversion didn't degrade transit service.")
+        st.markdown("#### Timeline")
+        st.markdown("""
+        - **2015**: Muni Forward launches. 100 Van Ness opens. Reliability ratings peak.
+        - **2015-2019**: Ratings stay elevated above historical average.
+        - **2020-2021**: COVID disrupts ridership and service.
+        - **Summer 2025**: SFMTA cuts 5 bus lines due to budget shortfall.
+        - **Nov 2026**: Voters decide on two tax measures to fund Muni.
+        - **Sep 2027**: If measures fail, up to 20 additional lines eliminated.
+        """)
+
     with col2:
-        st.markdown("**Geographic gradient** -- Southern/eastern districts (D8, D9, D10) "
-                    "consistently rate Muni reliability lower than northern/western ones, "
-                    "reflecting uneven service quality across the city.")
+        st.markdown("#### Equity Implications")
+        st.markdown("""
+        - **Southern/eastern districts** (D8, D9, D10) already rate reliability lowest.
+        - **Black and Hispanic riders** depend on Muni at higher rates than White riders.
+        - Proposed cuts target **lower-ridership lines** -- which often serve less-dense,
+          transit-dependent neighborhoods.
+        - Of 21 riders interviewed on at-risk routes, **only 3 knew about potential cuts**
+          (SF Standard). Awareness gap is a serious equity issue.
+        """)
+
+    st.markdown("---")
+    st.markdown("**Key takeaways for 100 Van Ness and transit policy:**")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("**Conversion didn't strain transit** -- But we can't claim it helped either. "
+                    "The 2015 Muni Forward rollout is a major confounder that makes the "
+                    "pre/post comparison unreliable as causal evidence.")
+    with col2:
+        st.markdown("**Geographic inequality persists** -- Southern/eastern districts consistently "
+                    "rate reliability lower. Muni Forward helped everyone, but didn't close the gap.")
+    with col3:
+        st.markdown("**The future is uncertain** -- Any gains from Muni Forward could be erased "
+                    "by the 2025-2027 service cuts. Office-to-residential conversions in "
+                    "transit-rich corridors only work if the transit stays.")
 
 
 # ══════════════════════════════════════════════
