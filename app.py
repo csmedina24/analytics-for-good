@@ -754,7 +754,7 @@ with tab2:
 # ══════════════════════════════════════════════
 
 with tab3:
-    st.subheader("Downtown Hospitality Safety Task Force (Feb 2026)")
+    st.subheader("Downtown Hospitality Safety Task Force (Feb 2025)")
     st.markdown("Increased police presence in downtown commercial areas. "
                 "What does the data tell us about this zone?")
 
@@ -776,10 +776,10 @@ with tab3:
                 label="Rest of SF")
 
         months = hosp_zone["year_month"].values
-        feb_idx = list(months).index("2026-02") if "2026-02" in months else None
+        feb_idx = list(months).index("2025-02") if "2025-02" in months else None
         if feb_idx is not None:
             ax.axvline(feb_idx, color="#6B7280", linewidth=2, linestyle="--", alpha=0.7)
-            ax.annotate("Task Force (Feb 2026)",
+            ax.annotate("Task Force (Feb 2025)",
                         xy=(feb_idx, ax.get_ylim()[1] * 0.95),
                         fontsize=10, ha="center", color="#6B7280", fontweight="bold")
 
