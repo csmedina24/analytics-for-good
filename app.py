@@ -337,16 +337,23 @@ with tab2:
 
     st.markdown("---")
 
-    # ── Pipeline in the District ─────────────
-    st.markdown("### Eligible Buildings in the District")
+    # ── The Starting Point: Zero Conversions ─
+    st.markdown("### The Starting Point: Zero Completed Conversions")
+
+    st.error("**As of February 2026, San Francisco has zero completed office-to-residential "
+             "conversions downtown.** Despite years of discussion, high construction costs, "
+             "building code requirements, and zoning barriers have prevented any projects from "
+             "finishing. The DRD program is designed to break this deadlock by providing financial "
+             "incentives. "
+             "([SF Chronicle, Feb 2026](https://www.sfchronicle.com/sf/article/downtown-office-conversions-21345575.php))")
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("Historical Conversions", f"{len(off2res_dedup)}",
-                  delta=f"{completed_conv['proposed_units'].sum():.0f} completed units")
+        st.metric("Completed Conversions", "0",
+                  delta="none as of Feb 2026")
     with col2:
-        st.metric("Active Pipeline", f"{len(active_conv)}",
-                  delta=f"{active_conv['proposed_units'].sum():.0f} units filed/issued")
+        st.metric("In Pipeline (filed/issued)", f"{len(active_conv)}",
+                  delta=f"{active_conv['proposed_units'].sum():.0f} proposed units")
     with col3:
         est_units_at_threshold = 1_500_000 / 800
         st.metric("1.5M Sq Ft Threshold",
@@ -356,40 +363,57 @@ with tab2:
         st.metric("Max Tax Increment", "$1.22B",
                   delta="over district lifetime")
 
+    st.markdown("---")
+
+    # ── Where Could Conversions Happen? ──────
+    st.markdown("### Where Could Conversions Happen?")
+    st.markdown("The permit pipeline shows buildings with office use in the DRD neighborhoods. "
+                "These represent the pool of *potentially eligible* buildings -- not conversions "
+                "that have occurred.")
+
+    # Count all office buildings in district (not just ones with residential permits)
+    office_buildings = dt_pipe[
+        dt_pipe["existing_use"].str.contains("office", case=False, na=False)
+    ].copy()
+    office_buildings["address"] = (office_buildings["street_number"].astype(str) + " "
+                                   + office_buildings["street_name"])
+    office_dedup = office_buildings.drop_duplicates("address", keep="first")
+
     col1, col2 = st.columns(2)
 
     with col1:
-        nbhd_stats = off2res_dedup.groupby("neighborhoods_analysis_boundaries").agg(
-            projects=("address", "count"),
+        office_by_nbhd = office_dedup.groupby("neighborhoods_analysis_boundaries").agg(
+            buildings=("address", "count"),
             total_units=("proposed_units", "sum")
-        ).sort_values("total_units", ascending=True)
+        ).sort_values("buildings", ascending=True)
 
         fig, ax = plt.subplots(figsize=(7, 4))
-        short_names = [n.split("/")[0] if "/" in n else n for n in nbhd_stats.index]
-        ax.barh(short_names, nbhd_stats["total_units"].values,
-                color=GREEN, alpha=0.85, height=0.6)
-        for i, (units, projects) in enumerate(
-                zip(nbhd_stats["total_units"].values, nbhd_stats["projects"].values)):
-            ax.text(units + 30, i, f"{int(units)} units ({projects} projects)",
-                    va="center", fontsize=9)
-        ax.set_xlabel("Proposed Units")
-        ax.set_title("Office-to-Residential Conversions by Neighborhood", fontweight="bold")
+        short_names = [n.split("/")[0] if "/" in n else n for n in office_by_nbhd.index]
+        ax.barh(short_names, office_by_nbhd["buildings"].values,
+                color=PURPLE, alpha=0.85, height=0.6)
+        for i, count in enumerate(office_by_nbhd["buildings"].values):
+            ax.text(count + 5, i, f"{count}", va="center", fontsize=9)
+        ax.set_xlabel("Office Buildings (unique addresses)")
+        ax.set_title("Potential DRD-Eligible Office Buildings", fontweight="bold")
         plt.tight_layout()
         st.pyplot(fig)
         plt.close()
 
     with col2:
-        status_counts = off2res_dedup["status"].value_counts()
-        fig, ax = plt.subplots(figsize=(7, 4))
-        status_colors = {"complete": GREEN, "issued": BLUE, "filed": AMBER,
-                         "expired": "#94A3B8", "cancelled": RED, "withdrawn": "#6B7280"}
-        colors = [status_colors.get(s, "#999") for s in status_counts.index]
-        ax.pie(status_counts.values, labels=status_counts.index, colors=colors,
-               autopct="%1.0f%%", startangle=90, textprops={"fontsize": 10})
-        ax.set_title("Project Status Distribution", fontweight="bold")
-        plt.tight_layout()
-        st.pyplot(fig)
-        plt.close()
+        # Projects that have filed/issued permits for office-to-residential
+        if len(active_conv) > 0:
+            st.markdown("**Active conversion applications:**")
+            for _, row in active_conv.iterrows():
+                st.markdown(f"- **{row['address']}** -- {int(row['proposed_units'])} units "
+                            f"({row['status']}, {row['neighborhoods_analysis_boundaries']})")
+        else:
+            st.markdown("**No active conversion applications in the pipeline.**")
+
+        st.markdown("")
+        st.info("The DRD program's tax increment incentive is designed to make "
+                "conversions financially viable for the first time. The number and "
+                "scale of future projects will depend on developer enrollment "
+                "before the December 31, 2032 deadline.")
 
     st.markdown("---")
 
@@ -610,9 +634,6 @@ with tab2:
     # ── Equity Assessment ────────────────────
     st.markdown("### Equity Assessment")
 
-    n_tenderloin = len(off2res_dedup[
-        off2res_dedup["neighborhoods_analysis_boundaries"] == "Tenderloin"])
-
     st.warning(
         "**Key equity concerns with the DRD program:**\n\n"
         "1. **First-come-first-served affordability** -- The 1.5M sq ft exemption rewards "
@@ -622,16 +643,16 @@ with tab2:
         f"crowding thresholds at ~{DRD_ROUTES['units_to_85'].min():,} units on the most "
         "constrained line. Black and Hispanic riders, who already rate Muni reliability "
         "lowest, would bear the crowding cost of new development.\n\n"
-        f"3. **Tenderloin concentration** -- {n_tenderloin} of {len(off2res_dedup)} "
-        "historical conversions were in the Tenderloin, where the Hospitality Zone data "
-        "shows 42% Asian and 5% Black population. Market-rate housing without affordability "
-        "requirements risks displacement.\n\n"
+        "3. **Tenderloin and SoMa concentration** -- Most eligible office buildings are in "
+        "the Tenderloin and Financial District, where the Hospitality Zone data shows 42% "
+        "Asian and 5% Black population. Market-rate housing without affordability "
+        "requirements risks displacement of existing residents.\n\n"
         "4. **Tax increment diverts from transit** -- The program returns up to 64.59% of "
         "property tax increment to developers for 30 years. That's revenue that could fund "
         "the transit capacity these same conversions require.\n\n"
         "5. **No coordination mechanism** -- The DRD has no provisions linking housing "
-        "production to transit investment, labor community benefits, or displacement "
-        "mitigation beyond minimum affordable housing thresholds."
+        "production to transit investment or displacement mitigation beyond minimum "
+        "affordable housing thresholds."
     )
 
     st.markdown("---")
