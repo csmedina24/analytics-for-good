@@ -75,15 +75,37 @@ def load_and_fit():
     m_viol = smf.ols("violent ~ treated + post + treated_x_post",
                       data=temescal_filtered).fit(cov_type="HC1")
 
+    # Hospitality Task Force DiD
+    disp = pd.read_csv("data/displacement_crime.csv")
+    disp["treated"] = (disp["zone"] == "Hospitality Zone").astype(int)
+    disp["post"] = (disp["year_month"] >= "2025-02").astype(int)
+    disp["treated_x_post"] = disp["treated"] * disp["post"]
+    disp["t"] = disp.groupby("zone").cumcount()
+
+    m_hosp_total = smf.ols(
+        "total_crimes ~ treated + post + treated_x_post", data=disp
+    ).fit(cov_type="HC1")
+    m_hosp_drug = smf.ols(
+        "drug_offenses ~ treated + post + treated_x_post", data=disp
+    ).fit(cov_type="HC1")
+    m_hosp_dispatch = smf.ols(
+        "dispatch_calls ~ treated + post + treated_x_post", data=disp
+    ).fit(cov_type="HC1")
+    m_hosp_trend = smf.ols(
+        "total_crimes ~ treated + post + treated_x_post + t", data=disp
+    ).fit(cov_type="HC1")
+
     return (crime, housing, temescal, temescal_filtered,
             m_total, m_violent, m_housing, m_van_ness, m_tem, m_prop, m_viol,
             survey_race, survey_trend, hosp_demo, hosp_monthly,
-            muni_trend, muni_district, muni_race)
+            muni_trend, muni_district, muni_race,
+            m_hosp_total, m_hosp_drug, m_hosp_dispatch, m_hosp_trend)
 
 (crime_panel, housing_panel, temescal_yr, temescal_filt,
  m_total, m_violent, m_housing, m_van_ness, m_tem, m_prop, m_viol,
  survey_race, survey_trend, hosp_demo, hosp_monthly,
- muni_trend, muni_district, muni_race) = load_and_fit()
+ muni_trend, muni_district, muni_race,
+ m_hosp_total, m_hosp_drug, m_hosp_dispatch, m_hosp_trend) = load_and_fit()
 
 
 
@@ -120,97 +142,17 @@ def coef_chart(model, keep_vars, labels, title, color):
 st.title("Bringing SF Back")
 st.markdown("What tradeoffs do local policies create -- and what factors are driving them?")
 
-tab1, tab2, tab3, tab4 = st.tabs([
-    "Upzoning", "Office-to-Residential & DRD",
+tab1, tab2, tab3 = st.tabs([
+    "Office-to-Residential & DRD",
     "Hospitality Task Force", "Data + Variables"
 ])
 
 
 # ══════════════════════════════════════════════
-# TAB 1: UPZONING
+# TAB 1: OFFICE-TO-RESIDENTIAL & DRD
 # ══════════════════════════════════════════════
 
 with tab1:
-    st.subheader("Upzoning and Densification")
-    st.markdown("Oakland upzoned Temescal in 2015. What happened to crime -- and what factors explain it?")
-
-    col_chart, col_metrics = st.columns([2, 1])
-
-    with col_chart:
-        fig, ax = plt.subplots(figsize=(9, 4.5))
-        plot_data = temescal_filt
-        for nbhd, color, marker in [("Temescal", RED, "o"), ("Control", BLUE, "s")]:
-            sub = plot_data[plot_data["neighborhood"] == nbhd]
-            ax.plot(sub["year"], sub["total_crime"], color=color, marker=marker,
-                    linewidth=2.5, markersize=7, label=nbhd)
-        ax.axvline(2015, color="#6B7280", linewidth=2, linestyle="--", alpha=0.7)
-        ax.annotate("Upzoning (2015)", xy=(2015, ax.get_ylim()[1] * 0.92),
-                    fontsize=10, ha="center", color="#6B7280", fontweight="bold")
-        ax.set_xlabel("Year")
-        ax.set_ylabel("Total Crimes")
-        ax.legend(frameon=True)
-        ax.set_xticks(sorted(plot_data["year"].unique()))
-        ax.set_title("Temescal vs Control: Crime Trends (2012-2020)", fontweight="bold")
-        plt.tight_layout()
-        st.pyplot(fig)
-        plt.close()
-
-    with col_metrics:
-        st.metric("Total Crime", f"+{m_tem.params['treated_x_post']:.0f}/yr",
-                  delta=f"p={m_tem.pvalues['treated_x_post']:.3f}")
-        st.metric("Property Crime", f"+{m_prop.params['treated_x_post']:.0f}/yr",
-                  delta=f"p={m_prop.pvalues['treated_x_post']:.3f}")
-        st.metric("Violent Crime", f"+{m_viol.params['treated_x_post']:.0f}/yr",
-                  delta=f"p={m_viol.pvalues['treated_x_post']:.2f} (n.s.)")
-        st.caption("DiD estimates filtered to 2012-2020 to exclude post-COVID spike")
-
-    st.markdown("---")
-
-    with st.expander("Full trend (2012-2023) for context"):
-        fig2, ax2 = plt.subplots(figsize=(9, 4))
-        for nbhd, color, marker in [("Temescal", RED, "o"), ("Control", BLUE, "s")]:
-            sub = temescal_yr[temescal_yr["neighborhood"] == nbhd]
-            ax2.plot(sub["year"], sub["total_crime"], color=color, marker=marker,
-                     linewidth=2.5, markersize=6, label=nbhd)
-        ax2.axvline(2015, color="#6B7280", linewidth=2, linestyle="--", alpha=0.6)
-        ax2.axvspan(2021, 2023, alpha=0.08, color=RED)
-        ax2.annotate("Post-COVID spike", xy=(2022, ax2.get_ylim()[1] * 0.85),
-                     fontsize=9, ha="center", color=RED, fontstyle="italic")
-        ax2.set_xlabel("Year")
-        ax2.set_ylabel("Total Crimes")
-        ax2.legend(frameon=True)
-        ax2.set_xticks(sorted(temescal_yr["year"].unique()))
-        ax2.set_title("Full Trend: Temescal vs Control (2012-2023)", fontweight="bold")
-        plt.tight_layout()
-        st.pyplot(fig2)
-        plt.close()
-        st.markdown("The sharp divergence after 2020 is likely driven by pandemic-era "
-                    "disruptions and recovery effects rather than the 2015 upzoning alone.")
-
-    st.markdown("---")
-    st.markdown("**What factors explain this?** The crime regression shows which neighborhood "
-                "characteristics drive crime rates:")
-
-    col1, col2 = st.columns(2)
-    keep = ["density", "log_median_value", "pct_residential", "log_income"]
-    labels = ["Housing Density", "Property Value (log)", "% Residential Land",
-              "Household Income (log)"]
-
-    with col1:
-        fig = coef_chart(m_total, keep, labels, "Total Crime Rate Drivers", BLUE)
-        st.pyplot(fig)
-        plt.close()
-    with col2:
-        fig = coef_chart(m_violent, keep, labels, "Violent Crime Rate Drivers", RED)
-        st.pyplot(fig)
-        plt.close()
-
-
-# ══════════════════════════════════════════════
-# TAB 2: OFFICE-TO-RESIDENTIAL
-# ══════════════════════════════════════════════
-
-with tab2:
     st.subheader("Downtown Revitalization District (DRD)")
     st.markdown("AB 2488 (2024) created the Downtown Revitalization Financing District (DRD) "
                 "to incentivize commercial-to-residential conversions downtown. How will these "
@@ -682,16 +624,18 @@ with tab2:
 
 
 # ══════════════════════════════════════════════
-# TAB 3: HOSPITALITY TASK FORCE
+# TAB 2: HOSPITALITY TASK FORCE
 # ══════════════════════════════════════════════
 
-with tab3:
+with tab2:
     st.subheader("Downtown Hospitality Safety Task Force (Feb 2025)")
-    st.markdown("Increased police presence in downtown commercial areas. "
-                "What does the data tell us about this zone?")
+    st.markdown("In February 2025, Mayor Lurie launched a dedicated police task force "
+                "covering Union Square, Moscone Center, and Yerba Buena Gardens -- "
+                "officers deployed 20 hours a day, 365 days a year. "
+                "Crime went down. Officials celebrated. But that's not the whole story.")
 
-    # ── Pre/Post Crime Chart ──────────────────
-    st.markdown("### Crime Before and After Implementation")
+    # ── PART 1: THE PROMISE ─────────────────
+    st.markdown("### Part 1: The Promise -- Crime Goes Down Downtown")
 
     hosp_zone = hosp_monthly[hosp_monthly["zone"] == "Hospitality Zone"].copy()
     rest_sf = hosp_monthly[hosp_monthly["zone"] == "Rest of SF"].copy()
@@ -747,6 +691,223 @@ with tab3:
             viol_change = ((post_viol - pre_viol) / pre_viol) * 100
             st.metric("Violent Crime", f"{post_viol:,.0f}/mo",
                       delta=f"{viol_change:+.1f}% vs pre")
+
+    # ── Officials celebrate ───
+    st.markdown("---")
+    st.markdown("#### The Official Response")
+
+    statements = pd.read_csv("data/official_statements.csv")
+    celebrate = statements[statements["mentions_displacement"] == "No"]
+
+    for _, row in celebrate.iterrows():
+        st.markdown(
+            f"> \"{row['quote']}\"  \n"
+            f"> -- **{row['speaker']}**, {row['event']} ({row['date']}) | *{row['source']}*"
+        )
+
+    st.markdown("---")
+
+    # ══════════════════════════════════════════════
+    # PART 2: BUT THAT'S NOT THE WHOLE STORY
+    # ══════════════════════════════════════════════
+
+    st.markdown("### Part 2: But That's Not the Whole Story")
+    st.markdown("Crime didn't disappear -- it moved. The neighborhoods surrounding "
+                "the hospitality zone absorbed what downtown pushed out.")
+
+    disp = pd.read_csv("data/displacement_crime.csv")
+
+    # ── Side-by-side: total crimes + drug offenses ───
+    col1, col2 = st.columns(2)
+
+    months_d = disp[disp["zone"] == "Hospitality Zone"]["year_month"].values
+    feb_idx_d = list(months_d).index("2025-02") if "2025-02" in months_d else None
+
+    with col1:
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+        for zone, color, marker in [("Hospitality Zone", GREEN, "o"),
+                                     ("Mission District", RED, "s"),
+                                     ("SoMa (Southern)", AMBER, "^")]:
+            zd = disp[disp["zone"] == zone]
+            ax.plot(range(len(zd)), zd["total_crimes"].values,
+                    color=color, marker=marker, linewidth=2, markersize=5,
+                    label=zone, alpha=0.9)
+        if feb_idx_d is not None:
+            ax.axvline(feb_idx_d, color="#6B7280", linewidth=2, linestyle="--", alpha=0.7)
+            ax.annotate("Task Force\n(Feb 2025)",
+                        xy=(feb_idx_d, ax.get_ylim()[1] * 0.92),
+                        fontsize=9, ha="center", color="#6B7280", fontweight="bold")
+        ax.set_xticks(range(0, len(months_d), 3))
+        ax.set_xticklabels([months_d[i][2:] for i in range(0, len(months_d), 3)],
+                           rotation=45, ha="right", fontsize=9)
+        ax.set_ylabel("Total Crimes")
+        ax.set_title("Total Crime: Downtown vs Surrounding Areas", fontweight="bold")
+        ax.legend(frameon=True, fontsize=8)
+        plt.tight_layout()
+        st.pyplot(fig)
+        plt.close()
+
+    with col2:
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+        for zone, color, marker in [("Hospitality Zone", GREEN, "o"),
+                                     ("Mission District", RED, "s"),
+                                     ("SoMa (Southern)", AMBER, "^")]:
+            zd = disp[disp["zone"] == zone]
+            ax.plot(range(len(zd)), zd["drug_offenses"].values,
+                    color=color, marker=marker, linewidth=2, markersize=5,
+                    label=zone, alpha=0.9)
+        if feb_idx_d is not None:
+            ax.axvline(feb_idx_d, color="#6B7280", linewidth=2, linestyle="--", alpha=0.7)
+            ax.annotate("Task Force\n(Feb 2025)",
+                        xy=(feb_idx_d, ax.get_ylim()[1] * 0.92),
+                        fontsize=9, ha="center", color="#6B7280", fontweight="bold")
+        ax.set_xticks(range(0, len(months_d), 3))
+        ax.set_xticklabels([months_d[i][2:] for i in range(0, len(months_d), 3)],
+                           rotation=45, ha="right", fontsize=9)
+        ax.set_ylabel("Drug Offenses")
+        ax.set_title("Drug Offenses: The Displacement Effect", fontweight="bold")
+        ax.legend(frameon=True, fontsize=8)
+        plt.tight_layout()
+        st.pyplot(fig)
+        plt.close()
+
+    # ── Displacement metrics ───
+    col1, col2, col3, col4 = st.columns(4)
+
+    mission_pre = disp[(disp["zone"] == "Mission District") & (disp["year_month"] < "2025-02")]
+    mission_post = disp[(disp["zone"] == "Mission District") & (disp["year_month"] >= "2025-02")]
+
+    with col1:
+        pre_drug = mission_pre["drug_offenses"].mean()
+        post_drug = mission_post["drug_offenses"].mean()
+        drug_pct = ((post_drug - pre_drug) / pre_drug) * 100
+        st.metric("Mission Drug Offenses",
+                  f"{post_drug:.0f}/mo",
+                  delta=f"{drug_pct:+.0f}% vs pre",
+                  delta_color="inverse")
+    with col2:
+        pre_dc = mission_pre["dispatch_calls"].mean()
+        post_dc = mission_post["dispatch_calls"].mean()
+        dc_pct = ((post_dc - pre_dc) / pre_dc) * 100
+        st.metric("Mission 911 Calls",
+                  f"{post_dc:.0f}/mo",
+                  delta=f"{dc_pct:+.0f}% vs pre",
+                  delta_color="inverse")
+    with col3:
+        st.metric("16th & Mission Drug Share",
+                  "27% of citywide",
+                  delta="was 5% pre-task force",
+                  delta_color="inverse")
+    with col4:
+        st.metric("311 Complaints (Mission)",
+                  "10-year high",
+                  delta="Jan-Feb 2025",
+                  delta_color="inverse")
+
+    st.caption("Drug offenses and disorderly conduct are NOT Part 1 crimes -- they are "
+               "excluded from the official SFPD dashboards cited in press conferences. "
+               "Sources: Mission Local, SF Standard, GrowSF, SFPD DMACC data.")
+
+    st.markdown("---")
+
+    # ── The one time they acknowledged it ───
+    st.markdown("#### Did Officials Acknowledge This?")
+
+    col1, col2 = st.columns([1.3, 1])
+
+    with col1:
+        yes_count = (statements["mentions_displacement"] == "Yes").sum()
+        no_count = (statements["mentions_displacement"] == "No").sum()
+
+        fig, ax = plt.subplots(figsize=(6, 3))
+        bars = ax.barh(["Acknowledges\nDisplacement", "No Mention"],
+                       [yes_count, no_count],
+                       color=[GREEN, RED], alpha=0.85, height=0.5)
+        for bar, val in zip(bars, [yes_count, no_count]):
+            ax.text(bar.get_width() + 0.15, bar.get_y() + bar.get_height() / 2,
+                    f"{val}", va="center", fontsize=13, fontweight="bold")
+        ax.set_xlabel("Number of Public Statements")
+        ax.set_title("9 Major Statements Tracked: How Many Mention Displacement?",
+                     fontweight="bold")
+        ax.set_xlim(0, no_count + 2)
+        plt.tight_layout()
+        st.pyplot(fig)
+        plt.close()
+
+    with col2:
+        acknowledge = statements[statements["mentions_displacement"] == "Yes"]
+        st.markdown("**The only times displacement was acknowledged:**")
+        for _, row in acknowledge.iterrows():
+            st.markdown(
+                f"> \"{row['quote']}\"  \n"
+                f"> -- **{row['speaker']}**, {row['event']} ({row['date']})"
+            )
+        st.markdown("")
+        st.markdown(
+            "*Both acknowledgments came only when officials were directly pressed "
+            "by journalists or at a Board of Supervisors hearing -- never in proactive "
+            "communications.*"
+        )
+
+    st.markdown("---")
+
+    # ══════════════════════════════════════════════
+    # PART 3: WHO BENEFITS?
+    # ══════════════════════════════════════════════
+
+    st.markdown("### Part 3: Who Benefits?")
+    st.markdown("Visitors and voters see a safer downtown. Residents in surrounding "
+                "neighborhoods experience the displacement firsthand.")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("#### The Downtown View")
+        fig, ax = plt.subplots(figsize=(7, 4))
+        visitor_data = [
+            ("Support downtown\npolice (voters)", 73, GREEN),
+            ("Feel safer with\nvisible patrols", 85, GREEN),
+            ("City on right\ntrack (mid-2025)", 52, BLUE),
+        ]
+        labels = [d[0] for d in visitor_data]
+        vals = [d[1] for d in visitor_data]
+        colors = [d[2] for d in visitor_data]
+        bars = ax.barh(labels, vals, color=colors, alpha=0.85, height=0.55)
+        for bar, val in zip(bars, vals):
+            ax.text(bar.get_width() + 1, bar.get_y() + bar.get_height() / 2,
+                    f"{val}%", va="center", fontsize=11, fontweight="bold")
+        ax.set_xlim(0, 100)
+        ax.set_xlabel("% Agreement")
+        ax.set_title("Visitors & Voters: The Task Force Works", fontweight="bold")
+        plt.tight_layout()
+        st.pyplot(fig)
+        plt.close()
+        st.caption("Sources: GrowSF Pulse Poll (Feb 2025, n=423; Jul 2025), "
+                   "NBC Bay Area visitor interviews.")
+
+    with col2:
+        st.markdown("#### The Neighborhood View")
+        fig, ax = plt.subplots(figsize=(7, 4))
+        resident_data = [
+            ("Tenderloin: feel safe\nwalking (day)", 24, RED),
+            ("FiDi: feel safe\nwalking (day)", 23, RED),
+            ("Mission: concerned\nabout displacement", 78, RED),
+        ]
+        labels = [d[0] for d in resident_data]
+        vals = [d[1] for d in resident_data]
+        colors = [d[2] for d in resident_data]
+        bars = ax.barh(labels, vals, color=colors, alpha=0.85, height=0.55)
+        for bar, val in zip(bars, vals):
+            ax.text(bar.get_width() + 1, bar.get_y() + bar.get_height() / 2,
+                    f"{val}%", va="center", fontsize=11, fontweight="bold")
+        ax.set_xlim(0, 100)
+        ax.set_xlabel("% Agreement")
+        ax.set_title("Surrounding Residents: A Different Reality", fontweight="bold")
+        plt.tight_layout()
+        st.pyplot(fig)
+        plt.close()
+        st.caption("Sources: SF City Survey (2023, n=2,500+), Mission Local, "
+                   "community meetings (May 2025).")
 
     st.markdown("---")
 
@@ -859,15 +1020,15 @@ with tab3:
         st.markdown("**Perception gap** -- Asian residents feel the least safe during the day "
                     "despite rating police quality highest.")
     with col3:
-        st.markdown("**Early results** -- Crime dropped in the zone post-implementation, "
-                    "but it's too early to attribute this to the task force vs seasonal trends.")
+        st.markdown("**Who bears the cost** -- The neighborhoods absorbing displaced crime "
+                    "are disproportionately lower-income communities of color.")
 
 
 # ══════════════════════════════════════════════
-# TAB 4: DATA + VARIABLES
+# TAB 3: DATA + VARIABLES
 # ══════════════════════════════════════════════
 
-with tab4:
+with tab3:
     st.subheader("Data + Variable Definitions")
 
     col_data, col_dict = st.columns([1.3, 1])
