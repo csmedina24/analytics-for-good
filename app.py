@@ -372,6 +372,48 @@ with tab1:
     # ══════════════════════════════════════════
 
     st.markdown("### Predicting Transit Impact of DRD Conversions")
+
+    with st.expander("Methodology: How We Derived Transit Impact Predictions", expanded=False):
+        st.markdown("""
+        **Objective:** Estimate how new residential units from DRD conversions would affect
+        peak-hour crowding on Muni routes serving downtown.
+
+        **Data sources:**
+        - **Ridership:** SFMTA monthly ridership reports (2019-present) for daily boarding counts
+          by route.
+        - **Service frequency & capacity:** SFMTA GTFS schedule data and 511 SF Bay real-time API.
+          Standard Muni buses seat ~83 passengers; light rail vehicles (N, T, K, M) carry ~203.
+        - **Peak load factors:** Derived from real-time vehicle observations collected April 7-13,
+          2026 via the 511 API (610,573 headway observations across routes 49, 38, 38R). Load
+          percentages represent the ratio of observed peak-hour passengers to vehicle capacity.
+
+        **Model assumptions:**
+        | Parameter | Value | Source |
+        |-----------|-------|--------|
+        | Avg. household size | 1.8 persons | Census ACS, SF downtown tracts |
+        | Transit mode share | 40% | SFMTA Travel Decision Survey (downtown) |
+        | Trips per person per day | 2 (round trip) | Standard planning assumption |
+        | Share of daily trips in 4-hr peak | 35% | SFMTA peak-to-base ratio |
+        | Avg. routes served per location | 3 | DRD grid network density |
+
+        **Calculation:**
+        For each conversion scenario (e.g., 500 units, 1,000 units), we compute:
+
+        1. **New peak-hour riders per route** = (units x 1.8 persons x 0.40 transit share x
+           2 trips x 0.35 peak share) / (4 peak hours x 3 routes)
+        2. **New load factor** = (current passengers + new riders per bus) / vehicle capacity x 100
+        3. **Units to threshold** = how many units each route can absorb before reaching 85% load
+           (the standard crowding threshold used in transit planning)
+
+        **Limitations:**
+        - This is a **deterministic capacity model**, not a statistical regression. It projects
+          demand based on planning parameters rather than estimating effects from observed variation.
+        - Assumes uniform distribution of new riders across serving routes (actual ridership
+          patterns may concentrate on specific lines).
+        - Does not account for induced demand, mode shift, or potential SFMTA service changes.
+        - Load factors reflect a single week of observations and may vary seasonally.
+        """)
+
     st.markdown("Using current Muni ridership, vehicle capacity, and frequency data, "
                 "we model how new residents from conversions would load the transit routes "
                 "serving the DRD.")
