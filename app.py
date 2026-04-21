@@ -13,8 +13,6 @@ import seaborn as sns
 import json
 import urllib.request
 from datetime import datetime, timezone
-import folium
-from streamlit_folium import st_folium
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -182,53 +180,9 @@ with tab1:
 
     # ── DRD Boundary Map ─────────────────────
     st.markdown("#### District Boundaries")
-    st.caption("The DRD covers downtown C-3 zoning districts. Boundary approximate; "
-               "based on AB 2488 §62450(h) and the Financing Plan (Feb 2026).")
-
-    DRD_BOUNDARY = [
-        (37.7967, -122.3954),   # Washington & Embarcadero
-        (37.7764, -122.3912),   # King & 3rd St
-        (37.7786, -122.3936),   # 3rd & Townsend
-        (37.7761, -122.4009),   # Townsend & 6th St area
-        (37.7810, -122.4083),   # 6th & Mission
-        (37.7764, -122.4137),   # Mission & 10th
-        (37.7758, -122.4130),   # 10th & Minna
-        (37.7748, -122.4143),   # Minna & Lafayette
-        (37.7740, -122.4133),   # Lafayette & Howard
-        (37.7720, -122.4155),   # Howard & Central Freeway
-        (37.7734, -122.4210),   # Central Freeway & Market
-        (37.7770, -122.4214),   # Market & Franklin
-        (37.7793, -122.4213),   # Franklin & Golden Gate Ave
-        (37.7815, -122.4108),   # Golden Gate & Taylor
-        (37.7826, -122.4110),   # Taylor & Turk
-        (37.7832, -122.4089),   # Turk & Mason
-        (37.7849, -122.4092),   # Mason & Ellis
-        (37.7847, -122.4111),   # Ellis & Taylor
-        (37.7859, -122.4114),   # Taylor & O'Farrell
-        (37.7860, -122.4131),   # O'Farrell & Shannon
-        (37.7868, -122.4130),   # Shannon & Geary
-        (37.7869, -122.4111),   # Geary & Taylor
-        (37.7901, -122.4118),   # Taylor & Bush
-        (37.7907, -122.4040),   # Bush & Kearny
-        (37.7942, -122.4045),   # Kearny & Sacramento
-        (37.7946, -122.4024),   # Sacramento & Montgomery
-        (37.7955, -122.4027),   # Montgomery & Washington
-        (37.7967, -122.3954),   # Close polygon
-    ]
-
-    drd_map = folium.Map(location=[37.7850, -122.4050], zoom_start=14,
-                         tiles="CartoDB positron")
-    folium.Polygon(
-        locations=DRD_BOUNDARY,
-        color=BLUE,
-        weight=2.5,
-        fill=True,
-        fill_color=BLUE,
-        fill_opacity=0.15,
-        tooltip="Downtown Revitalization District",
-    ).add_to(drd_map)
-
-    st_folium(drd_map, width=700, height=420, returned_objects=[])
+    st.image("data/drd_boundary_map.png", use_container_width=True)
+    st.caption("Approximate boundary based on AB 2488 §62450(h) and the Financing Plan (Feb 2026). "
+               "Covers downtown C-3 zoning districts.")
 
     st.markdown("---")
 
