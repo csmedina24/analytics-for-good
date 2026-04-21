@@ -160,6 +160,25 @@ with tab1:
                 "and benefits, and what may be driving it beyond the stated goal of "
                 "'increasing housing and decreasing vacancy.'")
 
+    # ── Legislative History ────────────────────
+    st.markdown("#### How We Got Here")
+    st.markdown(
+        "| Year | Action | Key Players |\n"
+        "|------|--------|-------------|\n"
+        "| **2024** | **AB 2488** — establishes the DRD framework in state law | "
+        "Mayor London Breed + Assemblymember Matt Haney |\n"
+        "| **Mar 2025** | **Ordinance 20-25** — waives SF's inclusionary housing (Sec. 415) "
+        "and impact fees for C-3 conversions (first 7M sq ft) | Mayor Daniel Lurie |\n"
+        "| **2025** | **AB 1445** — amends AB 2488 | Assemblymember Matt Haney |\n"
+        "| **Feb 2026** | **Financing Plan adopted** — defines boundaries, tax increment "
+        "allocation, and $1.22B district cap | Mayor Daniel Lurie |"
+    )
+    st.caption("The DRD policy framework was created under the Breed administration. "
+               "The Lurie administration inherited it and made key implementation decisions — "
+               "including waiving local affordable housing requirements and adopting the financing plan.")
+
+    st.markdown("---")
+
     # ── Stated Goal: Mayor Lurie ─────────────
     st.markdown("#### The Stated Goal")
     st.info(
@@ -348,15 +367,16 @@ with tab1:
     col1, col2, col3 = st.columns(3)
     with col1:
         st.markdown("**Tier 1: 0 - 1.5M sq ft**")
-        st.markdown("No state affordability requirements. Local inclusionary (Sec. 415) "
-                    "also waived in C-3 districts. These projects can be **100% market-rate**.")
+        st.markdown("No state affordability requirements (AB 2488). Local inclusionary "
+                    "(Sec. 415) waived in C-3 districts by Ordinance 20-25 (Mar 2025). "
+                    "These projects can be **100% market-rate**.")
     with col2:
         st.markdown("**Tier 2: 1.5M - 7M sq ft**")
         st.markdown("State minimums kick in -- one of:\n"
                     "- 5% of rental units at **50% AMI** (55 yrs)\n"
                     "- 10% of rental units at **80% AMI** (55 yrs)\n"
                     "- 10% of for-sale units at **120% AMI** (45 yrs)\n\n"
-                    "Local inclusionary still waived.")
+                    "Local inclusionary (Sec. 415) still waived under Ordinance 20-25.")
     with col3:
         st.markdown("**Tier 3: 7M+ sq ft**")
         st.markdown("Both state minimums **and** SF's local inclusionary housing "
