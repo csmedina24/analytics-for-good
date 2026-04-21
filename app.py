@@ -702,50 +702,34 @@ with tab1:
 
     # ── Who Actually Benefits? ───────────────
     st.markdown("### Who Actually Benefits?")
-    st.markdown("The DRD's stated goal is 'increasing housing and decreasing vacancy.' "
-                "But the data raises questions about who this housing serves.")
 
-    col1, col2 = st.columns(2)
+    st.markdown(
+        "SF lost **~66,000 residents** during COVID, yet rents have fully recovered and "
+        "surpassed 2019 peaks. Fewer people, higher prices — the housing crisis is driven "
+        "by **income competition**, not population growth."
+    )
 
+    col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown("#### The Population Paradox")
-        st.markdown(
-            "Residential rents are rising despite **fewer people** living in the city:\n\n"
-            "| Year | Population | Change |\n"
-            "|------|-----------|--------|\n"
-            "| 2020 | 873,965 | (Census) |\n"
-            "| 2021 | 811,935 | -62,030 |\n"
-            "| 2022 | 807,774 | -4,161 |\n"
-            "| 2023 | 808,988 | +1,214 |\n\n"
-            "SF lost ~66,000 residents during COVID -- many to Sacramento, Central Valley, "
-            "and the Central Coast. Yet rents have fully recovered and surpassed 2019 peaks. "
-            "This suggests the housing crisis is driven by **income competition**, not population "
-            "growth. Higher earners who stayed or returned set the market price."
-        )
-
-        st.markdown("")
-        st.markdown(
-            "A UC Berkeley study (2026) found that **wage disparity, not housing scarcity**, "
-            "is the primary driver of unaffordability. It would take **18 to 124 years** of "
-            "building at triple the current rate for a 1BR to become affordable to someone "
-            "earning the median non-college-graduate wage."
-        )
-
+        st.metric("Median SF Rent", "$3,665/mo", "requires $146,600/yr income")
     with col2:
-        st.markdown("#### The Affordability Gap")
-        st.markdown(
-            "Who can actually afford the housing the DRD will create?\n\n"
-            "- Median SF rent: **$3,665/mo** (requires **$146,600/yr** income)\n"
-            "- Median SF household income: **$139,801/yr**\n"
-            "- Gap: **$6,799/yr** -- the median household already can't afford median rent\n\n"
-            "Meanwhile, income inequality is widening:\n"
-            "- Top earners saw income grow **34%** (2010-2024)\n"
-            "- Lowest earners saw only **4%** growth\n"
-            "- **80%** of the city's 66,000 extremely low-income households spend more than "
-            "1/3 of income on rent\n\n"
-            "The DRD's **Tier 1 allows 100% market-rate** housing with zero affordability "
-            "requirements. At current rents, these units serve households earning $140K+."
-        )
+        st.metric("Median Household Income", "$139,801/yr", "-$6,799/yr gap")
+    with col3:
+        st.metric("DRD Tier 1 Housing", "100% market-rate", "zero affordability requirements")
+
+    st.markdown(
+        "The first 1,875 units (1.5M sq ft) will have **no affordable housing requirements** "
+        "— serving households earning $140K+. Meanwhile, 80% of the city's 66,000 extremely "
+        "low-income households already spend more than a third of their income on rent."
+    )
+    st.caption(
+        "Sources: Census ACS population estimates; Zumper median rent data. "
+        "A 2026 UC Berkeley Terner Center study analyzed SF housing costs relative to "
+        "wage growth and concluded that wage disparity — not housing scarcity — is the "
+        "primary driver of unaffordability. The study estimated it would take 18 to 124 years "
+        "of building at triple the current rate for a 1BR to become affordable to someone "
+        "earning the median non-college-graduate wage."
+    )
 
     st.markdown("---")
 
@@ -1045,6 +1029,97 @@ with tab2:
             "communications.*"
         )
 
+    st.markdown("---")
+
+    # ══════════════════════════════════════════════
+    # PUBLIC SENTIMENT: WHAT RESIDENTS ARE SAYING
+    # ══════════════════════════════════════════════
+
+    st.markdown("### Public Sentiment: What Residents in SoMa and the Mission Are Saying")
+    st.markdown("Officials celebrate downtown wins. These are the voices of residents "
+                "living in the neighborhoods absorbing the displacement -- parents, "
+                "longtime residents, youth, and community organizers. "
+                "Quotes are drawn from Mission Local, SF Standard, ABC7, NBC Bay Area, "
+                "Axios SF, and community meetings (2025-2026).")
+
+    sentiment = pd.read_csv("data/resident_sentiment.csv")
+
+    # ── Filter and show quotes ──
+    st.markdown("#### Voices from the Neighborhood")
+
+    col_f1, col_f2 = st.columns(2)
+    with col_f1:
+        filter_nbhd = st.selectbox("Filter by neighborhood:",
+                                    ["All", "Mission", "SoMa"],
+                                    key="sentiment_nbhd")
+    with col_f2:
+        filter_topic = st.selectbox("Filter by topic:",
+                                     ["All", "Drugs", "Public Safety",
+                                      "Homelessness", "Policy"],
+                                     key="sentiment_topic")
+
+    filtered = sentiment.copy()
+    if filter_nbhd != "All":
+        filtered = filtered[filtered["neighborhood"] == filter_nbhd]
+    if filter_topic != "All":
+        filtered = filtered[filtered["topic"] == filter_topic]
+
+    if len(filtered) == 0:
+        st.info("No quotes match the selected filters.")
+    else:
+        # Two-column layout for quotes
+        col1, col2 = st.columns(2)
+        cols = [col1, col2]
+        for i, (_, row) in enumerate(filtered.iterrows()):
+            with cols[i % 2]:
+                sent_emoji = "&#128309;" if row["sentiment"] == "Negative" else \
+                             "&#128993;" if row["sentiment"] == "Mixed" else "&#128994;"
+                st.markdown(
+                    f"<div style='background-color: #F9FAFB; padding: 12px; "
+                    f"border-left: 4px solid "
+                    f"{RED if row['sentiment'] == 'Negative' else AMBER if row['sentiment'] == 'Mixed' else GREEN}; "
+                    f"margin-bottom: 12px; border-radius: 4px;'>"
+                    f"<div style='font-style: italic; color: #1F2937; margin-bottom: 8px;'>"
+                    f"\"{row['quote']}\"</div>"
+                    f"<div style='font-size: 0.85em; color: #6B7280;'>"
+                    f"— <b>{row['speaker']}</b> ({row['identity']})<br>"
+                    f"<span style='color: #9CA3AF;'>{row['neighborhood']} · {row['topic']} · "
+                    f"<a href='{row['url']}' target='_blank' style='color: #6366F1;'>{row['source']}</a> · "
+                    f"{row['date']}</span></div></div>",
+                    unsafe_allow_html=True
+                )
+
+    st.markdown("---")
+
+    # ── Summary metrics ──
+    col1, col2, col3 = st.columns(3)
+    neg = (sentiment["sentiment"] == "Negative").sum()
+    mix = (sentiment["sentiment"] == "Mixed").sum()
+    pos = (sentiment["sentiment"] == "Positive").sum()
+    total = len(sentiment)
+
+    with col1:
+        st.metric("Negative sentiment", f"{neg}/{total}",
+                  f"{neg / total * 100:.0f}% of quotes")
+    with col2:
+        st.metric("Mixed sentiment", f"{mix}/{total}",
+                  f"{mix / total * 100:.0f}% of quotes")
+    with col3:
+        st.metric("Positive sentiment", f"{pos}/{total}",
+                  f"{pos / total * 100:.0f}% of quotes")
+
+    st.markdown("")
+
+    # ── Closing insight ──
+    st.markdown("#### The Pattern in Residents' Voices")
+    st.markdown(
+        "**The disconnect:** While the mayor says *\"This city is safe\"* and cites "
+        "historic crime lows, residents in SoMa and the Mission describe their "
+        "neighborhoods as *\"a shit show every night,\"* *\"like a third world country,\"* "
+        "and *\"containment zones for the city's problems.\"* "
+        "The narrative gap between **official statements** and **resident experience** "
+        "is the story the numbers alone don't tell."
+    )
 
 
 # ══════════════════════════════════════════════
