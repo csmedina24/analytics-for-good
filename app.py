@@ -238,14 +238,63 @@ with tab1:
         - Enrollment deadline: **December 31, 2032**
         """)
     with col2:
-        st.markdown("""
-        **Financial structure:**
-        - Annual distribution = City's share (~64.59%) of 1% property tax on incremental value
-        - Capped at 1/30th of total Qualified Development Costs per year
-        - Maximum **30 years** of distributions
-        - Total district cap: **$1.22 billion** in allocated tax revenue
-        - Admin costs capped at **5%** of tax revenues
-        """)
+        st.markdown("**How the money flows:**")
+        st.markdown(
+            "When a developer converts an office building to housing, the property's "
+            "value goes up — and so do its property taxes. Normally that new tax revenue "
+            "goes to the city. Under the DRD, the city **returns up to 64.59%** of that "
+            "increase back to the developer each year for up to **30 years** to help "
+            "offset conversion costs."
+        )
+
+    # ── Financial Flow Diagram ──────────────
+    fig, ax = plt.subplots(figsize=(10, 3))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 3)
+    ax.set_axis_off()
+
+    # Boxes
+    boxes = [
+        (0.3, 1.2, "Office → Housing\nConversion", "#E0E7FF", BLUE),
+        (3.3, 1.2, "Property Value\nIncreases", "#FEF3C7", AMBER),
+        (6.3, 1.2, "New Tax Revenue\nGenerated", "#D1FAE5", GREEN),
+    ]
+    for x, y, text, fc, ec in boxes:
+        rect = plt.Rectangle((x, y), 2.4, 1.4, facecolor=fc, edgecolor=ec,
+                              linewidth=2, zorder=2, clip_on=False)
+        ax.add_patch(rect)
+        ax.text(x + 1.2, y + 0.7, text, ha="center", va="center",
+                fontsize=10, fontweight="bold", color="#1F2937", zorder=3)
+
+    # Arrows between boxes
+    arrow_style = dict(arrowstyle="->, head_width=0.3, head_length=0.15",
+                       color="#6B7280", lw=2)
+    ax.annotate("", xy=(3.2, 1.9), xytext=(2.8, 1.9), arrowprops=arrow_style)
+    ax.annotate("", xy=(6.2, 1.9), xytext=(5.8, 1.9), arrowprops=arrow_style)
+
+    # Split arrow from tax revenue
+    ax.annotate("", xy=(9.5, 2.6), xytext=(8.8, 2.2), arrowprops=arrow_style)
+    ax.annotate("", xy=(9.5, 1.0), xytext=(8.8, 1.4), arrowprops=arrow_style)
+
+    # Labels for the split
+    ax.text(9.6, 2.65, "64.59% → Developer", fontsize=9, fontweight="bold",
+            color=BLUE, va="center")
+    ax.text(9.6, 2.3, "(up to 30 years)", fontsize=8, color="#6B7280", va="center")
+    ax.text(9.6, 1.0, "35.41% → City", fontsize=9, fontweight="bold",
+            color=GREEN, va="center")
+    ax.text(9.6, 0.65, "(schools, transit, services)", fontsize=8,
+            color="#6B7280", va="center")
+
+    ax.set_title("How the DRD Financial Structure Works", fontweight="bold",
+                 fontsize=12, pad=10)
+    plt.tight_layout()
+    st.pyplot(fig)
+    plt.close()
+
+    st.markdown(
+        f"**District-wide cap:** $1.22 billion in total allocated tax revenue &nbsp;|&nbsp; "
+        f"**Admin costs:** capped at 5% of tax revenues"
+    )
 
     st.markdown("---")
 
