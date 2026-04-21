@@ -733,50 +733,6 @@ with tab1:
 
     st.markdown("---")
 
-    # ── The AI Counterpressure ───────────────
-    st.markdown("### The Counter-Signal: AI Is Absorbing Office Space")
-    st.markdown("While the DRD targets empty offices, a parallel trend is filling them -- "
-                "potentially undermining the vacancy rationale.")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        # AI leasing data
-        fig, ax = plt.subplots(figsize=(7, 4))
-        ai_data = pd.DataFrame([
-            {"company": "OpenAI", "sqft": 1000000},
-            {"company": "Anthropic", "sqft": 330000},
-            {"company": "Other AI firms", "sqft": 370000},
-        ])
-        ai_sorted = ai_data.sort_values("sqft", ascending=True)
-        bars = ax.barh(ai_sorted["company"], ai_sorted["sqft"] / 1e6,
-                       color=[BLUE, PURPLE, AMBER], alpha=0.85, height=0.5)
-        for bar, val in zip(bars, ai_sorted["sqft"]):
-            ax.text(bar.get_width() + 0.02, bar.get_y() + bar.get_height() / 2,
-                    f"{val / 1e6:.1f}M sqft", va="center", fontsize=10, fontweight="bold")
-        ax.set_xlabel("Office Space Leased (millions of sqft)")
-        ax.set_title("AI Companies Leasing SF Office Space", fontweight="bold")
-        ax.set_xlim(0, 1.5)
-        plt.tight_layout()
-        st.pyplot(fig)
-        plt.close()
-
-    with col2:
-        st.markdown(
-            "**AI office demand has surged 107% year-over-year** (Sept 2025). "
-            "Key facts:\n\n"
-            "- AI firms leased **5M+ sqft** in SF over the last 5 years\n"
-            "- CBRE projects **16M more sqft** of AI demand by 2030\n"
-            "- Office vacancy has started declining for 3 straight quarters\n"
-            "- But AI companies are **revenue-strong without being headcount-heavy** -- "
-            "they don't create jobs proportional to their space\n\n"
-            "**The tension:** If AI firms are filling offices, is the DRD converting space "
-            "that the market is *already* repurposing? Or is the remaining 35% vacancy "
-            "concentrated in buildings AI doesn't want -- the ones most likely to convert?"
-        )
-
-    st.markdown("---")
-
     # ── Putting It Together ──────────────────
     st.markdown("### What's Really Driving This?")
 
