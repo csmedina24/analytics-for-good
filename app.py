@@ -419,77 +419,9 @@ with tab1:
     # ══════════════════════════════════════════════════════
 
     st.markdown("---")
-    st.markdown("## Part 2: The Reality Check")
-    st.markdown("The DRD sounds straightforward: turn empty offices into homes. "
-                "But the practical reality involves significant costs *and* real benefits.")
-
-    st.markdown("---")
-
-    # ── Challenges ───────────────────────────
-    st.markdown("### The Challenges")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown("#### High Construction Costs")
-        st.markdown(
-            "Office-to-residential conversions are expensive -- often **$400-$600+ per square "
-            "foot** in San Francisco, comparable to new construction. Key barriers include:\n\n"
-            "- **Building code gaps**: offices lack residential plumbing, ventilation, and fire "
-            "separation requirements\n"
-            "- **Floor plate mismatch**: deep office floor plates create windowless interior "
-            "spaces unsuitable for housing\n"
-            "- **Structural upgrades**: seismic retrofitting and load redistribution\n"
-            "- **Permitting timeline**: 18+ months for approvals before construction begins\n\n"
-            "This is why zero conversions have been completed despite years of policy effort. "
-            "The economics simply haven't worked without direct financial incentives."
-        )
-
-    with col2:
-        st.markdown("#### Transit Capacity Strain")
-        st.markdown(
-            "New downtown residents will depend on an already-stressed Muni system:\n\n"
-            "- The most constrained bus route (**38R Geary Rapid**) is already at **72% peak load**\n"
-            "- SFMTA faces a **$307 million deficit** starting July 2026\n"
-            "- **5 bus lines already cut** in summer 2025; up to **20 more** could be eliminated "
-            "by September 2027 if ballot measures fail\n"
-            "- The DRD has **no mechanism** to coordinate with SFMTA or fund transit capacity\n\n"
-            "The program assumes downtown is 'transit-rich,' but that designation may not hold "
-            "if service cuts continue."
-        )
-
-    st.markdown("---")
-
-    # ── Benefits ─────────────────────────────
-    st.markdown("### The Benefits")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown("#### Increased Housing Supply")
-        st.markdown(
-            "SF officials estimate **~50 properties** could qualify for the DRD, yielding "
-            "approximately **4,400 residential units** housing over **7,000 residents**.\n\n"
-            "- Targets the **42 million sq ft** of vacant office space sitting empty downtown\n"
-            "- Adds housing *without demolishing existing homes* or displacing current residents\n"
-            "- Brings residents into a neighborhood with existing infrastructure (transit, "
-            "retail, services)\n"
-            "- Could help activate dead street-level frontage in the Financial District"
-        )
-
-    with col2:
-        st.markdown("#### Construction Economy")
-        st.markdown(
-            "Conversions create significant economic activity:\n\n"
-            "- At **$400-$600/sqft**, a 200,000 sqft conversion = **$80M-$120M** in "
-            "construction contracts\n"
-            "- The $1.22B tax increment cap implies substantial construction spending across "
-            "the district\n"
-            "- Creates jobs in construction, architecture, engineering, and building trades\n"
-            "- Revenue to the city through permit fees, sales tax on materials, and income tax "
-            "on construction wages\n"
-            "- Long-term property tax revenue *after* the 30-year increment period ends"
-        )
+    st.markdown("## Part 2: The DRD in Practice")
+    st.markdown("What does this policy actually look like when applied? "
+                "From permit pipelines to transit capacity, here's what the data shows.")
 
     st.markdown("---")
 
