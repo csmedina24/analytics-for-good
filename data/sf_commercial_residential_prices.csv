@@ -1,0 +1,30 @@
+quarter,year,office_rent_psf,office_vacancy_pct,residential_1br_rent,residential_2br_rent,source_notes
+2019-Q1,2019,76.00,5.30,3450,4650,CBRE/JLL market reports; Zumper median rent
+2019-Q2,2019,78.00,4.70,3500,4700,SF.gov record low vacancy Q2 2019; pre-pandemic peak rents
+2019-Q3,2019,79.00,5.00,3500,4680,CBRE/Cushman market reports
+2019-Q4,2019,80.00,5.50,3460,4600,CBRE Q4 2019 reports
+2020-Q1,2020,84.70,8.00,3400,4500,Peak office rent; early COVID impact on vacancy
+2020-Q2,2020,82.00,16.70,3100,4100,Pandemic WFH surge; rents begin falling
+2020-Q3,2020,78.00,22.00,2800,3700,Mass exodus from SF; rent drops accelerate
+2020-Q4,2020,75.00,24.50,2650,3500,Zumper reports 25%+ rent decline from peak
+2021-Q1,2021,72.00,26.00,2500,3400,Office vacancy continues rising; residential bottom
+2021-Q2,2021,70.00,27.50,2650,3500,Slight residential recovery begins
+2021-Q3,2021,69.00,28.00,2900,3750,Residential rebound accelerating (15% annual growth)
+2021-Q4,2021,68.50,28.50,3100,4000,Office stabilizing; residential recovery continues
+2022-Q1,2022,75.86,27.00,3200,4150,CBRE Q4 2022 office rent reference; residential climbing
+2022-Q2,2022,76.00,27.50,3350,4350,Office briefly rebounds; Class A at $80/sqft
+2022-Q3,2022,74.00,29.00,3400,4400,Tech layoffs begin impacting office demand
+2022-Q4,2022,72.00,30.50,3340,4300,CBRE Q4 2022 report
+2023-Q1,2023,70.00,31.80,3310,4250,Office decline resumes; vacancy climbing
+2023-Q2,2023,69.00,33.90,3340,4280,JLL/CBRE reports; residential relatively stable
+2023-Q3,2023,68.00,34.50,3340,4250,Continued office weakness
+2023-Q4,2023,67.00,35.50,3270,4200,Near-trough for office rents
+2024-Q1,2024,66.50,36.00,3290,4250,Office vacancy approaching peak
+2024-Q2,2024,68.27,36.90,3320,4300,CBRE: lowest rent since late 2015; peak vacancy
+2024-Q3,2024,66.00,36.50,3350,4350,Slight vacancy improvement begins
+2024-Q4,2024,66.06,36.50,3310,4300,CommercialCafe 2024 annual average
+2025-Q1,2025,68.46,36.60,3400,4450,JLL Q4 2025; vacancy ticks up slightly
+2025-Q2,2025,69.00,35.10,3500,4550,IPG: largest quarterly vacancy decline since 2015; AI demand
+2025-Q3,2025,69.50,34.60,3600,4700,CBRE Q3 2025; third straight quarter of improvement
+2025-Q4,2025,69.16,34.00,3650,4800,JLL Q1 2026 report reference
+2026-Q1,2026,69.50,33.50,3890,5170,Zumper Apr 2026: 1BR $3890 2BR $5167; DRD launches Feb 2026
