@@ -180,7 +180,9 @@ with tab1:
 
     # ── DRD Boundary Map ─────────────────────
     st.markdown("#### District Boundaries")
-    st.image("data/drd_boundary_map.png", use_container_width=True)
+    col_map_l, col_map, col_map_r = st.columns([1, 2, 1])
+    with col_map:
+        st.image("data/drd_boundary_map.png", use_container_width=True)
     st.caption("Approximate boundary based on AB 2488 §62450(h) and the Financing Plan (Feb 2026). "
                "Covers downtown C-3 zoning districts.")
 
