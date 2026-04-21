@@ -425,56 +425,6 @@ with tab1:
 
     st.markdown("---")
 
-    # ── Where Could Conversions Happen? ──────
-    st.markdown("### Where Could Conversions Happen?")
-    st.markdown("The permit pipeline shows buildings with office use in the DRD neighborhoods. "
-                "These represent the pool of *potentially eligible* buildings -- not conversions "
-                "that have occurred.")
-
-    office_buildings = dt_pipe[
-        dt_pipe["existing_use"].str.contains("office", case=False, na=False)
-    ].copy()
-    office_buildings["address"] = (office_buildings["street_number"].astype(str) + " "
-                                   + office_buildings["street_name"])
-    office_dedup = office_buildings.drop_duplicates("address", keep="first")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        office_by_nbhd = office_dedup.groupby("neighborhoods_analysis_boundaries").agg(
-            buildings=("address", "count"),
-            total_units=("proposed_units", "sum")
-        ).sort_values("buildings", ascending=True)
-
-        fig, ax = plt.subplots(figsize=(7, 4))
-        short_names = [n.split("/")[0] if "/" in n else n for n in office_by_nbhd.index]
-        ax.barh(short_names, office_by_nbhd["buildings"].values,
-                color=PURPLE, alpha=0.85, height=0.6)
-        for i, count in enumerate(office_by_nbhd["buildings"].values):
-            ax.text(count + 5, i, f"{count}", va="center", fontsize=9)
-        ax.set_xlabel("Office Buildings (unique addresses)")
-        ax.set_title("Potential DRD-Eligible Office Buildings", fontweight="bold")
-        plt.tight_layout()
-        st.pyplot(fig)
-        plt.close()
-
-    with col2:
-        if len(active_conv) > 0:
-            st.markdown("**Active conversion applications:**")
-            for _, row in active_conv.iterrows():
-                st.markdown(f"- **{row['address']}** -- {int(row['proposed_units'])} units "
-                            f"({row['status']}, {row['neighborhoods_analysis_boundaries']})")
-        else:
-            st.markdown("**No active conversion applications in the pipeline.**")
-
-        st.markdown("")
-        st.info("The DRD program's tax increment incentive is designed to make "
-                "conversions financially viable for the first time. The number and "
-                "scale of future projects will depend on developer enrollment "
-                "before the December 31, 2032 deadline.")
-
-    st.markdown("---")
-
     # ── Transit Impact Model ─────────────────
     st.markdown("### Transit Impact: Modeling the Load")
 
