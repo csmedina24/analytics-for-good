@@ -419,9 +419,9 @@ with tab1:
     # ══════════════════════════════════════════════════════
 
     st.markdown("---")
-    st.markdown("## Part 2: The DRD in Practice")
-    st.markdown("What does this policy actually look like when applied? "
-                "From permit pipelines to transit capacity, here's what the data shows.")
+    st.markdown("## Part 2: The DRD in Practice — Transit Analysis")
+    st.markdown("New downtown residents will depend on Muni. "
+                "How much capacity does the system have to absorb them?")
 
     st.markdown("---")
 
