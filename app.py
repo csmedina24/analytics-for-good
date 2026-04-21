@@ -13,6 +13,8 @@ import seaborn as sns
 import json
 import urllib.request
 from datetime import datetime, timezone
+import folium
+from streamlit_folium import st_folium
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -160,6 +162,76 @@ with tab1:
                 "and benefits, and what may be driving it beyond the stated goal of "
                 "'increasing housing and decreasing vacancy.'")
 
+    # ── Stated Goal: Mayor Lurie ─────────────
+    st.markdown("#### The Stated Goal")
+    st.info(
+        "\"Through our Heart of the City plan, our administration is accelerating downtown's "
+        "recovery by activating our public spaces, prioritizing safe and clean streets, and "
+        "creating a downtown where people live, work, play, and learn. This new financing "
+        "district will support office-to-residential conversions and help turn empty office "
+        "buildings into thousands of new homes—helping us add more housing in San Francisco "
+        "and delivering on a promise in our Heart of the City plan.\"\n\n"
+        "— **Mayor Daniel Lurie**, DRD Press Release (Feb 12, 2026)"
+    )
+    st.caption(
+        "The Heart of the City directive (Sept 2025) frames downtown's transformation as "
+        "driving citywide revenue — arguing that \"the ideas, innovation, and revenue generated "
+        "downtown fund the services that keep the whole city running.\" "
+        "([Source: Office of the Mayor, Sept 2025](https://www.sf.gov/news/mayor-lurie-announces-heart-city-plan))"
+    )
+
+    # ── DRD Boundary Map ─────────────────────
+    st.markdown("#### District Boundaries")
+    st.caption("The DRD covers downtown C-3 zoning districts. Boundary approximate; "
+               "based on AB 2488 §62450(h) and the Financing Plan (Feb 2026).")
+
+    DRD_BOUNDARY = [
+        (37.7967, -122.3954),   # Washington & Embarcadero
+        (37.7764, -122.3912),   # King & 3rd St
+        (37.7786, -122.3936),   # 3rd & Townsend
+        (37.7761, -122.4009),   # Townsend & 6th St area
+        (37.7810, -122.4083),   # 6th & Mission
+        (37.7764, -122.4137),   # Mission & 10th
+        (37.7758, -122.4130),   # 10th & Minna
+        (37.7748, -122.4143),   # Minna & Lafayette
+        (37.7740, -122.4133),   # Lafayette & Howard
+        (37.7720, -122.4155),   # Howard & Central Freeway
+        (37.7734, -122.4210),   # Central Freeway & Market
+        (37.7770, -122.4214),   # Market & Franklin
+        (37.7793, -122.4213),   # Franklin & Golden Gate Ave
+        (37.7815, -122.4108),   # Golden Gate & Taylor
+        (37.7826, -122.4110),   # Taylor & Turk
+        (37.7832, -122.4089),   # Turk & Mason
+        (37.7849, -122.4092),   # Mason & Ellis
+        (37.7847, -122.4111),   # Ellis & Taylor
+        (37.7859, -122.4114),   # Taylor & O'Farrell
+        (37.7860, -122.4131),   # O'Farrell & Shannon
+        (37.7868, -122.4130),   # Shannon & Geary
+        (37.7869, -122.4111),   # Geary & Taylor
+        (37.7901, -122.4118),   # Taylor & Bush
+        (37.7907, -122.4040),   # Bush & Kearny
+        (37.7942, -122.4045),   # Kearny & Sacramento
+        (37.7946, -122.4024),   # Sacramento & Montgomery
+        (37.7955, -122.4027),   # Montgomery & Washington
+        (37.7967, -122.3954),   # Close polygon
+    ]
+
+    drd_map = folium.Map(location=[37.7850, -122.4050], zoom_start=14,
+                         tiles="CartoDB positron")
+    folium.Polygon(
+        locations=DRD_BOUNDARY,
+        color=BLUE,
+        weight=2.5,
+        fill=True,
+        fill_color=BLUE,
+        fill_opacity=0.15,
+        tooltip="Downtown Revitalization District",
+    ).add_to(drd_map)
+
+    st_folium(drd_map, width=700, height=420, returned_objects=[])
+
+    st.markdown("---")
+
     # ── Load pipeline data ────────────────────
     pipeline = pd.read_csv("data/large_development_projects.csv")
     DRD_NBHDS = ["Financial District/South Beach", "Tenderloin", "South of Market",
@@ -189,16 +261,6 @@ with tab1:
 
     st.markdown("## Part 1: What Is the DRD?")
     st.markdown("Understanding the policy, its structure, and the problem it claims to solve.")
-
-    st.markdown("---")
-
-    # ── Legislative Timeline ─────────────────
-    st.markdown(
-        "- **2024** -- AB 2488 establishes the DRD under CA Gov. Code Sections 62450-62464\n"
-        "- **2025** -- AB 1445 amends the original law\n"
-        "- **Feb 12, 2026** -- Financing Plan adopted: the governing document defining "
-        "district boundaries, purpose, and property tax increment allocation"
-    )
 
     st.markdown("---")
 
