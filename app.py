@@ -686,13 +686,18 @@ with tab1:
 
     latest = price_df.iloc[-1]
     eff_monthly = latest["effective_office_rent"] * 800 / 12
+    res_rent = latest["residential_1br_rent"]
+    premium = res_rent - eff_monthly
+    asking_monthly = latest["office_rent_psf"] * 800 / 12
+    vacancy = latest["office_vacancy_pct"]
     st.markdown(
-        f"**The crossover happened in Q4 2022.** Effective office revenue per 800 sqft unit "
-        f"is now **${eff_monthly:,.0f}/mo** vs **${latest['residential_1br_rent']:,}/mo** for "
-        f"a 1BR apartment -- a **${latest['residential_1br_rent'] - eff_monthly:,.0f}/mo "
-        f"residential premium**. The pink shaded area represents revenue lost to vacancy: "
-        f"offices *could* charge ${latest['office_rent_psf'] * 800 / 12:,.0f}/mo, but with "
-        f"{latest['office_vacancy_pct']:.1f}% vacancy, a third of that revenue doesn't exist."
+        "**The crossover happened in Q4 2022.** Effective office revenue per 800 sqft unit "
+        "is now **\\${:,.0f}/mo** vs **\\${:,.0f}/mo** for a 1BR apartment "
+        "-- a **\\${:,.0f}/mo residential premium**. The pink shaded area represents "
+        "revenue lost to vacancy: offices *could* charge \\${:,.0f}/mo, but with "
+        "{:.1f}% vacancy, a third of that revenue doesn't exist.".format(
+            eff_monthly, res_rent, premium, asking_monthly, vacancy
+        )
     )
 
     st.caption("Sources: CBRE, JLL, Cushman & Wakefield market reports; Zumper/Zillow "
@@ -722,14 +727,7 @@ with tab1:
         "— serving households earning $140K+. Meanwhile, 80% of the city's 66,000 extremely "
         "low-income households already spend more than a third of their income on rent."
     )
-    st.caption(
-        "Sources: Census ACS population estimates; Zumper median rent data. "
-        "A 2026 UC Berkeley Terner Center study analyzed SF housing costs relative to "
-        "wage growth and concluded that wage disparity — not housing scarcity — is the "
-        "primary driver of unaffordability. The study estimated it would take 18 to 124 years "
-        "of building at triple the current rate for a 1BR to become affordable to someone "
-        "earning the median non-college-graduate wage."
-    )
+    st.caption("Sources: Census ACS population estimates; Zumper median rent data.")
 
     st.markdown("---")
 
