@@ -75,37 +75,15 @@ def load_and_fit():
     m_viol = smf.ols("violent ~ treated + post + treated_x_post",
                       data=temescal_filtered).fit(cov_type="HC1")
 
-    # Hospitality Task Force DiD
-    disp = pd.read_csv("data/displacement_crime.csv")
-    disp["treated"] = (disp["zone"] == "Hospitality Zone").astype(int)
-    disp["post"] = (disp["year_month"] >= "2025-02").astype(int)
-    disp["treated_x_post"] = disp["treated"] * disp["post"]
-    disp["t"] = disp.groupby("zone").cumcount()
-
-    m_hosp_total = smf.ols(
-        "total_crimes ~ treated + post + treated_x_post", data=disp
-    ).fit(cov_type="HC1")
-    m_hosp_drug = smf.ols(
-        "drug_offenses ~ treated + post + treated_x_post", data=disp
-    ).fit(cov_type="HC1")
-    m_hosp_dispatch = smf.ols(
-        "dispatch_calls ~ treated + post + treated_x_post", data=disp
-    ).fit(cov_type="HC1")
-    m_hosp_trend = smf.ols(
-        "total_crimes ~ treated + post + treated_x_post + t", data=disp
-    ).fit(cov_type="HC1")
-
     return (crime, housing, temescal, temescal_filtered,
             m_total, m_violent, m_housing, m_van_ness, m_tem, m_prop, m_viol,
             survey_race, survey_trend, hosp_demo, hosp_monthly,
-            muni_trend, muni_district, muni_race,
-            m_hosp_total, m_hosp_drug, m_hosp_dispatch, m_hosp_trend)
+            muni_trend, muni_district, muni_race)
 
 (crime_panel, housing_panel, temescal_yr, temescal_filt,
  m_total, m_violent, m_housing, m_van_ness, m_tem, m_prop, m_viol,
  survey_race, survey_trend, hosp_demo, hosp_monthly,
- muni_trend, muni_district, muni_race,
- m_hosp_total, m_hosp_drug, m_hosp_dispatch, m_hosp_trend) = load_and_fit()
+ muni_trend, muni_district, muni_race) = load_and_fit()
 
 
 
@@ -139,20 +117,236 @@ def coef_chart(model, keep_vars, labels, title, color):
 
 
 # ── PAGE ──────────────────────────────────────
-st.title("Bringing SF Back")
-st.markdown("What tradeoffs do local policies create -- and what factors are driving them?")
+st.title("Bringing SF Back?")
+st.markdown("Who benefits from downtown revitalization -- and where does the data diverge from the narrative?")
 
-tab1, tab2, tab3 = st.tabs([
-    "Office-to-Residential & DRD",
-    "Hospitality Task Force", "Data + Variables"
+tab0, tab1, tab2, tab3 = st.tabs([
+    "Overview",
+    "Hospitality Task Force",
+    "Office-to-Residential & DRD", "Methodology"
 ])
 
 
 # ══════════════════════════════════════════════
-# TAB 1: OFFICE-TO-RESIDENTIAL & DRD
+# TAB 0: OVERVIEW
 # ══════════════════════════════════════════════
 
-with tab1:
+with tab0:
+    # ── Hero / Research Question ──
+    st.markdown(
+        """
+        <div style="
+            background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%);
+            padding: 36px 40px;
+            border-radius: 12px;
+            color: white;
+            margin-top: 12px;
+            margin-bottom: 28px;
+        ">
+            <div style="font-size: 0.95em; letter-spacing: 2px; opacity: 0.85; margin-bottom: 10px;">
+                THE QUESTION
+            </div>
+            <div style="font-size: 1.55em; line-height: 1.5; font-weight: 500;">
+                San Francisco's <i>"Bring SF Back"</i> agenda promises broad recovery
+                through downtown revitalization. How are the
+                <b>benefits and costs distributed</b> across neighborhoods,
+                and where do <b>measurable impacts diverge from public narratives</b>
+                about the city's recovery?
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # ── Two Policy Cards ──
+    st.markdown("### Two flagship policies, examined closely")
+    st.markdown(
+        "Mayor Lurie's downtown revitalization agenda touches every part of city "
+        "life. We focus on the two policies with the largest measurable impacts "
+        "on residents -- one targeting **housing**, the other **public safety**."
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown(
+            """
+            <div style="
+                border: 2px solid #DC2626;
+                border-radius: 12px;
+                padding: 24px;
+                height: 100%;
+                background-color: #FEF8F8;
+            ">
+                <div style="font-size: 0.85em; color: #DC2626; font-weight: 700; letter-spacing: 1.5px;">
+                    POLICY 1 &nbsp;·&nbsp; PUBLIC SAFETY
+                </div>
+                <div style="font-size: 1.4em; font-weight: 700; margin-top: 6px; color: #1E293B;">
+                    Hospitality Task Force
+                </div>
+                <div style="font-size: 0.95em; color: #475569; margin-top: 10px; line-height: 1.5;">
+                    A dedicated SFPD unit deployed across Union Square, Moscone, and
+                    Yerba Buena Gardens <b>20 hours a day, 365 days a year</b>.
+                </div>
+                <div style="font-size: 0.85em; color: #64748B; margin-top: 14px;">
+                    <b>Launched:</b> Feb 2025<br>
+                    <b>Coverage:</b> Downtown commercial core<br>
+                    <b>Stated goal:</b> Boost downtown recovery via safety
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with col2:
+        st.markdown(
+            """
+            <div style="
+                border: 2px solid #2563EB;
+                border-radius: 12px;
+                padding: 24px;
+                height: 100%;
+                background-color: #F8FAFC;
+            ">
+                <div style="font-size: 0.85em; color: #2563EB; font-weight: 700; letter-spacing: 1.5px;">
+                    POLICY 2 &nbsp;·&nbsp; HOUSING
+                </div>
+                <div style="font-size: 1.4em; font-weight: 700; margin-top: 6px; color: #1E293B;">
+                    Downtown Revitalization District
+                </div>
+                <div style="font-size: 0.95em; color: #475569; margin-top: 10px; line-height: 1.5;">
+                    A tax-increment financing district that returns up to
+                    <b>64.59%</b> of new property tax revenue to developers
+                    converting offices to housing.
+                </div>
+                <div style="font-size: 0.85em; color: #64748B; margin-top: 14px;">
+                    <b>Adopted:</b> Feb 2026<br>
+                    <b>District cap:</b> $1.22 billion over 30 years<br>
+                    <b>Status:</b> 0 completed conversions
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("")
+    st.markdown("---")
+
+    # ── How to Read This Dashboard ──
+    st.markdown("### How each policy is examined")
+    st.markdown(
+        "Both tabs follow the same three-part structure -- moving from what "
+        "officials say, to what the data shows, to who actually benefits."
+    )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown(
+            """
+            <div style="
+                background: #EFF6FF;
+                border-left: 5px solid #2563EB;
+                padding: 18px 22px;
+                border-radius: 6px;
+                height: 100%;
+            ">
+                <div style="font-size: 0.8em; color: #1E40AF; font-weight: 700; letter-spacing: 1px;">
+                    PART 1
+                </div>
+                <div style="font-size: 1.2em; font-weight: 700; margin-top: 4px; color: #1E293B;">
+                    The Promise
+                </div>
+                <div style="font-size: 0.93em; color: #475569; margin-top: 10px; line-height: 1.5;">
+                    What the policy says it will do, in officials' own words --
+                    drawn from press releases, the State of the City, and on-record
+                    statements.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with col2:
+        st.markdown(
+            """
+            <div style="
+                background: #FFFBEB;
+                border-left: 5px solid #F59E0B;
+                padding: 18px 22px;
+                border-radius: 6px;
+                height: 100%;
+            ">
+                <div style="font-size: 0.8em; color: #92400E; font-weight: 700; letter-spacing: 1px;">
+                    PART 2
+                </div>
+                <div style="font-size: 1.2em; font-weight: 700; margin-top: 4px; color: #1E293B;">
+                    The Data
+                </div>
+                <div style="font-size: 0.93em; color: #475569; margin-top: 10px; line-height: 1.5;">
+                    What the data actually shows -- monthly crime trends, permit
+                    pipelines, rent indices, and tax-flow math from city, state,
+                    and journalism sources.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with col3:
+        st.markdown(
+            """
+            <div style="
+                background: #F0FDF4;
+                border-left: 5px solid #16A34A;
+                padding: 18px 22px;
+                border-radius: 6px;
+                height: 100%;
+            ">
+                <div style="font-size: 0.8em; color: #14532D; font-weight: 700; letter-spacing: 1px;">
+                    PART 3
+                </div>
+                <div style="font-size: 1.2em; font-weight: 700; margin-top: 4px; color: #1E293B;">
+                    Who Benefits, Who Pays
+                </div>
+                <div style="font-size: 0.93em; color: #475569; margin-top: 10px; line-height: 1.5;">
+                    Distributional analysis -- visitors, voters, and developers
+                    against residents in adjacent neighborhoods absorbing the costs.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("")
+    st.markdown("---")
+
+    # ── Where to start ──
+    st.markdown("### Where to start")
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col1:
+        st.markdown(
+            "**Start with the Hospitality Task Force tab** if you're new -- it's "
+            "the most complete narrative arc, with both quantitative data and "
+            "resident voices."
+        )
+    with col2:
+        st.markdown(
+            "**Visit the DRD tab** for the housing side -- legislative history, "
+            "financial flows, and analysis of who the program is designed to serve."
+        )
+    with col3:
+        st.markdown(
+            "**Open the Methodology tab** for data sources, analytical methods, "
+            "limitations, and replication notes."
+        )
+
+
+# ══════════════════════════════════════════════
+# TAB 2: OFFICE-TO-RESIDENTIAL & DRD
+# ══════════════════════════════════════════════
+
+with tab2:
     st.subheader("Downtown Revitalization District (DRD)")
     st.markdown("AB 2488 (2024) authorized the Downtown Revitalization District, amended by "
                 "AB 1445 (2025), with the Financing Plan adopted February 12, 2026. "
@@ -758,10 +952,10 @@ with tab1:
 
 
 # ══════════════════════════════════════════════
-# TAB 2: HOSPITALITY TASK FORCE
+# TAB 1: HOSPITALITY TASK FORCE
 # ══════════════════════════════════════════════
 
-with tab2:
+with tab1:
     st.subheader("Downtown Hospitality Safety Task Force (Feb 2025)")
     st.markdown("In February 2025, Mayor Lurie launched a dedicated police task force "
                 "covering Union Square, Moscone Center, and Yerba Buena Gardens -- "
@@ -1077,87 +1271,268 @@ with tab2:
 
 
 # ══════════════════════════════════════════════
-# TAB 3: DATA + VARIABLES
+# TAB 3: METHODOLOGY
 # ══════════════════════════════════════════════
 
 with tab3:
-    st.subheader("Data + Variable Definitions")
-
-    # ── Office-to-Residential & DRD ──────────
-    st.markdown("### Office-to-Residential & DRD")
-
-    col_data, col_dict = st.columns([1.3, 1])
-
-    with col_data:
-        st.markdown("**Transit Capacity Model — Key Variables**")
-        st.markdown("""
-        | Variable | Definition | Value / Source |
-        |----------|-----------|----------------|
-        | **Daily Boardings** | Avg weekday boardings per route | SFMTA ridership reports |
-        | **Peak Load Factor** | % of vehicle capacity used during peak hours | 511 API observations (Apr 2026) |
-        | **Vehicle Capacity** | Max passengers per vehicle (bus: 83, LRV: 203) | SFMTA vehicle specs |
-        | **Buses/Hr (Peak)** | Service frequency during AM/PM peak | SFMTA GTFS schedule |
-        | **Units to 85%** | New residential units before route hits crowding threshold | Model estimate |
-        | **Household Size** | Avg persons per converted unit | 1.8 (Census ACS, downtown SF) |
-        | **Transit Mode Share** | % of residents using Muni | 40% (SFMTA Travel Decision Survey) |
-        | **Peak Share** | % of daily trips in 4-hr peak window | 35% (SFMTA peak-to-base ratio) |
-        """)
-
-    with col_dict:
-        st.markdown("**DRD Program Parameters**")
-        st.markdown("""
-        | Parameter | Value |
-        |-----------|-------|
-        | **Tier 1 threshold** | 0 - 1.5M sq ft (no affordability) |
-        | **Tier 2 threshold** | 1.5M - 7M sq ft (state minimums) |
-        | **Tier 3 threshold** | 7M+ sq ft (state + local) |
-        | **Tax increment share** | ~64.59% of 1% property tax |
-        | **Max duration** | 30 years per project |
-        | **District cap** | $1.22 billion |
-        | **Enrollment deadline** | December 31, 2032 |
-        | **Min residential** | 60% of gross floor area |
-        """)
+    st.subheader("Methodology")
+    st.markdown("This page documents the research question, analytical approach, "
+                "data sources, and limitations underlying every chart in this dashboard.")
 
     st.markdown("---")
 
-    # ── Hospitality Task Force ───────────────
-    st.markdown("### Hospitality Task Force")
+    # ══════════════════════════════════════════════
+    # RESEARCH QUESTION
+    # ══════════════════════════════════════════════
 
-    col1, col2 = st.columns([1.3, 1])
+    st.markdown("## Research Question")
+    st.info(
+        "San Francisco's *'Bring SF Back'* agenda promises broad recovery through "
+        "downtown revitalization. Examining its two flagship policies — the **Downtown "
+        "Revitalization District (DRD)** and the **Hospitality Task Force** — how are "
+        "the benefits and costs distributed across neighborhoods, and where do "
+        "measurable impacts diverge from public narratives about the city's recovery?"
+    )
+
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.markdown(
+            "**Why these two policies?**  \n"
+            "They are the Lurie administration's flagship downtown revitalization "
+            "interventions: one targets the *built environment* (housing supply via "
+            "office conversions), the other targets the *streetscape* (visible safety "
+            "via concentrated police presence). Both are framed as benefits to the "
+            "whole city. Both have measurable spillover effects on surrounding "
+            "neighborhoods that are rarely acknowledged in official communications."
+        )
+    with col_b:
+        st.markdown(
+            "**What this dashboard asks**  \n"
+            "1. What are the **measurable impacts** of each policy on housing and "
+            "public safety?  \n"
+            "2. **Who benefits** from these impacts, and **who bears the costs**?  \n"
+            "3. How do the **measurable impacts** compare to the **public narratives** "
+            "officials use to promote the policies?"
+        )
+
+    st.markdown("---")
+
+    # ══════════════════════════════════════════════
+    # ANALYTICAL APPROACH
+    # ══════════════════════════════════════════════
+
+    st.markdown("## Analytical Approach")
+    st.markdown("Each policy is analyzed using a parallel three-part structure:")
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown(
+            "### Part 1: The Promise\n"
+            "What the policy *says* it will do, in officials' own words. "
+            "Sources: SF.gov press releases, State of the City addresses, "
+            "Mayor's social media, on-record statements."
+        )
+    with col2:
+        st.markdown(
+            "### Part 2: The Data\n"
+            "What the data actually shows. Monthly crime time series "
+            "(Hospitality Zone vs surrounding neighborhoods) for the Hospitality tab; "
+            "permit data, rent indices, and tax-increment math for the DRD tab."
+        )
+    with col3:
+        st.markdown(
+            "### Part 3: Who Benefits / Who Pays\n"
+            "Distributional analysis: who experiences the benefits "
+            "(visitors, voters, market-rate buyers) versus who absorbs the costs "
+            "(adjacent neighborhoods, lower-income residents, displaced populations)."
+        )
+
+    st.markdown("---")
+
+    # ══════════════════════════════════════════════
+    # KEY MODELS
+    # ══════════════════════════════════════════════
+
+    st.markdown("## Analytical Methods")
+
+    st.markdown("### Hospitality Task Force")
+    st.markdown(
+        "We compare monthly crime, drug offense, and 911 dispatch volumes in the "
+        "Hospitality Zone against surrounding neighborhoods (Mission + SoMa) before "
+        "and after the Feb 2025 launch.  \n"
+        "- **Pre/post comparison** — averages and percent change in crime "
+        "categories before and after task-force deployment  \n"
+        "- **Cross-zone comparison** — parallel time series showing whether crime "
+        "decreased downtown but rose in surrounding zones  \n"
+        "- **Narrative coding** — 9 official statements coded for whether they "
+        "acknowledge displacement; 22 attributed resident quotes coded for "
+        "neighborhood, topic, and sentiment"
+    )
+    st.caption(
+        "**Supplementary analysis:** A Difference-in-Differences (DiD) regression "
+        "of the task force's effect is available as a standalone script in the "
+        "GitHub repo at `streamlit_app/saved_hospitality_did_section.py`. "
+        "Run it with `python saved_hospitality_did_section.py` for formal "
+        "confidence intervals, p-values, and a time-trend robustness check. "
+        "The DiD is omitted from the dashboard itself because the descriptive "
+        "time-series and metrics in the Hospitality tab already convey the "
+        "displacement story for a general audience."
+    )
+
+    st.markdown("### DRD")
+    st.markdown(
+        "No causal estimate is attempted for the DRD because the policy has "
+        "produced **zero completed conversions** as of the Financing Plan adoption "
+        "(Feb 2026). Instead, we analyze:  \n"
+        "- **Pipeline status** (filed / issued / completed) from SF Planning Dept "
+        "permit data  \n"
+        "- **Rent vs income gap** using Zumper rent data and Census ACS income data  \n"
+        "- **Tax-increment financial flows** ($1.22B district cap, 64.59% developer "
+        "share, 30-year max duration)"
+    )
+
+    st.markdown("---")
+
+    # ══════════════════════════════════════════════
+    # DATA SOURCES
+    # ══════════════════════════════════════════════
+
+    st.markdown("## Data Sources")
+
+    st.markdown("### Hospitality Task Force Tab")
+    st.markdown("""
+    | Dataset | Source | Coverage | Notes |
+    |---------|--------|----------|-------|
+    | Hospitality Zone monthly crime | SFPD Incident Reports | Jan 2024 – Mar 2026 | Pre/post task force comparison |
+    | Surrounding-neighborhood crime | SFPD Incident Reports | Jan 2024 – Mar 2026 | Mission + SoMa for cross-zone comparison |
+    | Drug offenses & dispatch calls | SFPD DMACC, GrowSF reporting | 2024 – 2026 | Drug offenses are NOT Part 1 crimes |
+    | 311 Complaints | DataSF 311 Cases | Monthly | 16th & Mission 10-year highs |
+    | Official statements | SF.gov press releases, KQED, Mission Local, ABC7, NBC, SF Standard | Feb 2025 – Jan 2026 | 9 statements coded for displacement mention |
+    | Resident sentiment | Mission Local, SF Standard, ABC7, NBC, Axios SF, El Tecolote | Feb 2025 – Apr 2026 | 22 attributed quotes |
+    | Demographics | Census ACS 5-Year | 2020 – 2024 | Hospitality Zone vs adjacent |
+    | City Survey (safety / police) | SF City Survey | 2023, n=2,500+ | By race and neighborhood |
+    | Public polling | GrowSF Pulse Poll | Feb 2025, Jul 2025 | Voter support for downtown patrols |
+    """)
+
+    st.markdown("### DRD Tab")
+    st.markdown("""
+    | Dataset | Source | Coverage | Notes |
+    |---------|--------|----------|-------|
+    | Legislative history | AB 2488 (2024), AB 1445 (2025), SF Ord. 20-25, DRD Financing Plan (Feb 2026) | Statute + ordinance | Program rules |
+    | Boundaries | SF Office of Economic & Workforce Development | Feb 2026 | Downtown C-3 zoning districts |
+    | Development pipeline | SF Planning Dept building permits | Historical permits | Office-to-residential filings |
+    | Commercial / residential prices | CBRE, JLL, Cushman & Wakefield, Zumper, Zillow | Quarterly | Some interpolated |
+    | Vacancy data | SF.gov, JLL Office Market Reports | 2019 – 2025 | Office vacancy trend |
+    | Population | Census ACS 5-Year | 2019 – 2024 | COVID-era population loss |
+    """)
+
+    st.markdown("### Methodology Tab (this page)")
+    st.markdown(
+        "All quotes are **direct attributions** from named sources, with publication "
+        "and date. No quotes are paraphrased or fabricated. Where speakers are "
+        "unnamed in source reporting (e.g., \"a 30-year resident\"), they are listed "
+        "as \"Unnamed\" with their identifying context preserved from the original."
+    )
+
+    st.markdown("---")
+
+    # ══════════════════════════════════════════════
+    # KEY VARIABLES
+    # ══════════════════════════════════════════════
+
+    st.markdown("## Key Variables")
+
+    col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("**Crime & Displacement Data**")
-        disp_preview = pd.read_csv("data/displacement_crime.csv")
-        st.dataframe(disp_preview.head(10), use_container_width=True, hide_index=True)
-
-    with col2:
-        st.markdown("**Key Variables**")
+        st.markdown("### Hospitality / Crime Variables")
         st.markdown("""
         | Variable | Definition |
         |----------|-----------|
-        | **zone** | Hospitality Zone vs surrounding neighborhoods |
+        | **zone** | Hospitality Zone vs surrounding (Mission, SoMa) |
         | **year_month** | Monthly time period |
-        | **total_crimes** | All reported crimes in zone |
-        | **drug_offenses** | Drug-related offenses (not Part 1 crimes) |
-        | **dispatch_calls** | 911 dispatch calls to zone |
-        | **treated** | 1 = Hospitality Zone, 0 = control |
-        | **post** | 1 = after Feb 2025 task force launch |
+        | **total_crimes** | All reported crimes in the zone |
+        | **drug_offenses** | Drug-related offenses (NOT Part 1 — excluded from official SFPD dashboards) |
+        | **dispatch_calls** | 911 dispatch calls to the zone |
+        | **mentions_displacement** | Whether an official statement acknowledges displacement |
+        | **sentiment** | Negative / Mixed / Positive (manually coded from quote tone) |
+        """)
+
+    with col2:
+        st.markdown("### DRD Variables")
+        st.markdown("""
+        | Parameter | Value |
+        |-----------|-------|
+        | **Tier 1 threshold** | First 1.5M sq ft (no local affordability requirements) |
+        | **Tier 2 threshold** | 1.5M – 7M sq ft (state minimums apply) |
+        | **Tier 3 threshold** | 7M+ sq ft (state + local requirements) |
+        | **Tax increment share** | ~64.59% of new property tax revenue returned to developer |
+        | **Max duration** | 30 years per project |
+        | **District-wide cap** | $1.22 billion total tax revenue diversion |
+        | **Enrollment deadline** | December 31, 2032 |
+        | **Min residential** | 60% of gross floor area must be residential |
+        | **Status** | 0 completed conversions as of Feb 2026 |
         """)
 
     st.markdown("---")
 
-    # ── Data Sources ─────────────────────────
-    st.markdown("### Data Sources")
-    st.markdown("""
-    | Dataset | Source | Coverage | Used In |
-    |---------|--------|----------|---------|
-    | Hospitality Zone Crime | SFPD Incident Reports | Monthly, 2024-2025 | Hospitality tab |
-    | Displacement Crime | SFPD + 311 Data | Monthly, 2024-2025 | Hospitality tab |
-    | Official Statements | Press releases, news | Feb-Jul 2025 | Hospitality tab |
-    | Development Pipeline | SF Planning Dept | Historical permits | DRD tab |
-    | DRD Program Guidelines | AB 2488 (2024), AB 1445 (2025), Financing Plan (Feb 2026) | Program rules | DRD tab |
-    | Muni Ridership | SFMTA Monthly Reports | 2019-present | DRD transit model |
-    | Real-time Transit | 511 SF Bay API | Apr 7-13, 2026 (610K obs) | DRD transit model |
-    | SFMTA Service Data | GTFS Schedule | Current schedules | DRD transit model |
-    | Demographics | Census ACS 5-Year | 2020-2024 | Transit assumptions |
-    """)
+    # ══════════════════════════════════════════════
+    # LIMITATIONS
+    # ══════════════════════════════════════════════
+
+    st.markdown("## Limitations & Caveats")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("### Data Limitations")
+        st.markdown(
+            "- **Crime data lag.** SFPD reports are subject to revision. The "
+            "underlying SFPD crime panel runs 2018 – 2023; monthly post-task-force "
+            "data (2024 – 2026) is drawn from supplementary SFPD and DMACC reporting.  \n"
+            "- **Drug offenses are not Part 1 crimes.** They are excluded from the "
+            "official SFPD dashboards officials cite. This is itself a finding, not "
+            "a flaw — but readers should note it.  \n"
+            "- **DRD is too new for outcome data.** With zero completed conversions, "
+            "the analysis necessarily relies on program design, pipeline activity, "
+            "and parallel cases — not realized outcomes.  \n"
+            "- **Resident quotes are non-random.** They come from journalism and "
+            "community meetings, which over-represent organized voices and "
+            "under-represent the silent majority on either side."
+        )
+
+    with col2:
+        st.markdown("### Causal Caveats")
+        st.markdown(
+            "- **Cross-zone comparison is descriptive, not causal.** The dashboard "
+            "shows crime trajectories diverging between the Hospitality Zone and "
+            "surrounding neighborhoods after Feb 2025. This is descriptive "
+            "evidence consistent with displacement; for a more formal causal "
+            "estimate, see the DiD script linked in *Analytical Methods*.  \n"
+            "- **Citywide crime trends overlap.** SF saw a citywide crime decline "
+            "through 2025. Some of the Hospitality Zone improvement reflects this "
+            "broader trend rather than the task force alone.  \n"
+            "- **Displacement is an interpretation.** The data show crime "
+            "increases in the Mission and SoMa coinciding with task-force "
+            "deployment downtown. The *causal pathway* (displacement) is "
+            "supported by SFPD's own statements (e.g., Cmdr. Lew, May 2025) "
+            "but cannot be proven by the time-series data alone.  \n"
+            "- **Rent and income data are point-in-time.** Snapshots of "
+            "affordability gaps don't capture how the DRD will play out over "
+            "its 30-year window."
+        )
+
+    st.markdown("---")
+
+    # ══════════════════════════════════════════════
+    # REPLICATION
+    # ══════════════════════════════════════════════
+
+    st.markdown("## Replication")
+    st.markdown(
+        "All data files are committed to the project's GitHub repository. "
+        "All dashboard code is in `app.py`. To reproduce: clone the repo, "
+        "install requirements, run `streamlit run app.py`. The supplementary "
+        "DiD analysis can be reproduced by running "
+        "`python saved_hospitality_did_section.py` from the same directory."
+    )
