@@ -1187,6 +1187,38 @@ with tab1:
 
     sentiment = pd.read_csv("data/resident_sentiment.csv")
 
+    # ── Summary metrics ──
+    col1, col2, col3 = st.columns(3)
+    neg = (sentiment["sentiment"] == "Negative").sum()
+    mix = (sentiment["sentiment"] == "Mixed").sum()
+    pos = (sentiment["sentiment"] == "Positive").sum()
+    total = len(sentiment)
+
+    with col1:
+        st.metric("Negative sentiment", f"{neg}/{total}",
+                  f"{neg / total * 100:.0f}% of quotes")
+    with col2:
+        st.metric("Mixed sentiment", f"{mix}/{total}",
+                  f"{mix / total * 100:.0f}% of quotes")
+    with col3:
+        st.metric("Positive sentiment", f"{pos}/{total}",
+                  f"{pos / total * 100:.0f}% of quotes")
+
+    st.markdown("")
+
+    # ── Pattern in Residents' Voices ──
+    st.markdown("#### The Pattern in Residents' Voices")
+    st.markdown(
+        "**The disconnect:** While the mayor says *\"This city is safe\"* and cites "
+        "historic crime lows, residents in SoMa and the Mission describe their "
+        "neighborhoods as *\"a shit show every night,\"* *\"like a third world country,\"* "
+        "and *\"containment zones for the city's problems.\"* "
+        "The narrative gap between **official statements** and **resident experience** "
+        "is the story the numbers alone don't tell."
+    )
+
+    st.markdown("---")
+
     # ── Filter and show quotes ──
     st.markdown("#### Voices from the Neighborhood")
 
@@ -1215,8 +1247,6 @@ with tab1:
         cols = [col1, col2]
         for i, (_, row) in enumerate(filtered.iterrows()):
             with cols[i % 2]:
-                sent_emoji = "&#128309;" if row["sentiment"] == "Negative" else \
-                             "&#128993;" if row["sentiment"] == "Mixed" else "&#128994;"
                 st.markdown(
                     f"<div style='background-color: #F9FAFB; padding: 12px; "
                     f"border-left: 4px solid "
@@ -1231,36 +1261,4 @@ with tab1:
                     f"{row['date']}</span></div></div>",
                     unsafe_allow_html=True
                 )
-
-    st.markdown("---")
-
-    # ── Summary metrics ──
-    col1, col2, col3 = st.columns(3)
-    neg = (sentiment["sentiment"] == "Negative").sum()
-    mix = (sentiment["sentiment"] == "Mixed").sum()
-    pos = (sentiment["sentiment"] == "Positive").sum()
-    total = len(sentiment)
-
-    with col1:
-        st.metric("Negative sentiment", f"{neg}/{total}",
-                  f"{neg / total * 100:.0f}% of quotes")
-    with col2:
-        st.metric("Mixed sentiment", f"{mix}/{total}",
-                  f"{mix / total * 100:.0f}% of quotes")
-    with col3:
-        st.metric("Positive sentiment", f"{pos}/{total}",
-                  f"{pos / total * 100:.0f}% of quotes")
-
-    st.markdown("")
-
-    # ── Closing insight ──
-    st.markdown("#### The Pattern in Residents' Voices")
-    st.markdown(
-        "**The disconnect:** While the mayor says *\"This city is safe\"* and cites "
-        "historic crime lows, residents in SoMa and the Mission describe their "
-        "neighborhoods as *\"a shit show every night,\"* *\"like a third world country,\"* "
-        "and *\"containment zones for the city's problems.\"* "
-        "The narrative gap between **official statements** and **resident experience** "
-        "is the story the numbers alone don't tell."
-    )
 
