@@ -943,14 +943,13 @@ with tab2:
     with hcol2:
         st.markdown(summary_card(
             "THE DATA",
-            "$3,665",
-            "Median market rent in the first conversions",
+            "$3,958",
+            "SF median market rent (Zillow ZORI, Mar 2026)",
             "The DRD's affordability is <b>phased</b>: the first "
             "<b>1,875 units</b> face <b>no affordability requirements</b>, "
             "and only later tiers begin to require modest affordable "
-            "shares. \"Market-rate\" here means roughly <b>$3,665/month</b> "
-            "&mdash; in line with what downtown apartments already rent "
-            "for today.",
+            "shares. \"Market-rate\" here means roughly <b>$3,958/month</b> "
+            "&mdash; SF's citywide median rent per Zillow's ZORI index.",
             RED,
         ), unsafe_allow_html=True)
     with hcol3:
@@ -1329,9 +1328,9 @@ with tab2:
         f'<div style="font-size:0.72em;color:{PURPLE};font-weight:800;'
         f'letter-spacing:1.5px;">REQUIRED INCOME</div>'
         f'<div style="font-size:2.6em;font-weight:800;color:{SLATE_900};'
-        f'line-height:1.0;margin:8px 0 6px 0;">$146,600</div>'
+        f'line-height:1.0;margin:8px 0 6px 0;">$158,320</div>'
         f'<div style="font-size:0.85em;color:{SLATE_500};font-weight:600;'
-        f'line-height:1.4;">Per year, to afford $3,665/mo rent at the '
+        f'line-height:1.4;">Per year, to afford $3,958/mo rent at the '
         f'standard 30%-of-income rule</div></div>'
         f'<div style="flex:0 0 auto;background:{SLATE_50};display:flex;'
         f'flex-direction:column;justify-content:center;align-items:center;'
@@ -1340,7 +1339,7 @@ with tab2:
         f'<div style="font-size:0.7em;color:{RED};font-weight:800;'
         f'letter-spacing:1.5px;">GAP</div>'
         f'<div style="font-size:1.5em;font-weight:800;color:{RED};'
-        f'line-height:1.1;margin-top:4px;">&minus;$6,799</div>'
+        f'line-height:1.1;margin-top:4px;">&minus;$18,519</div>'
         f'<div style="font-size:0.72em;color:{SLATE_500};font-weight:600;'
         f'text-transform:uppercase;letter-spacing:0.6px;margin-top:2px;">'
         f'/yr short</div></div>'
@@ -1374,10 +1373,11 @@ with tab2:
     )
 
     st.caption(
-        "Sources: $3,665 SF median rent (Zumper, 2024&ndash;25). "
-        "$139,801 SF median household income (US Census ACS 2019&ndash;2023, "
-        "5-year estimates). $146,600 derived from rent at the standard "
-        "30%-of-income housing affordability rule."
+        "Sources: $3,958 SF median rent (Zillow Observed Rent Index "
+        "[ZORI], all homes, March 2026). $139,801 SF median household "
+        "income (US Census ACS 2019&ndash;2023, 5-year estimates). "
+        "$158,320 derived from rent at the standard 30%-of-income "
+        "housing affordability rule."
     )
 
     next_tab_arrow("Why is this important?", SLATE_500)
