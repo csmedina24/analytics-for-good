@@ -1935,9 +1935,11 @@ with tab1:
             </div>
             <div style="font-size: 1.4em; line-height: 1.45;
                         color: {SLATE_900}; font-weight: 500;">
-            When success is measured only in the categories officials choose
-            to count, and only in the neighborhoods they choose to celebrate,
-            the story they tell is true &mdash; <b>and incomplete</b>.
+            Voters and policymakers deserve a fuller picture than the headline
+            numbers provide. Tracking impact across every crime category and
+            every neighborhood the policy touches &mdash; not just those
+            inside its celebrated frame &mdash; is how the public can evaluate
+            not only whether a policy worked, but <b>for whom</b>.
             </div>
         </div>
         """,
@@ -1967,7 +1969,7 @@ with tab3:
         f'<div style="font-size:1.1em; color:{SLATE_700}; line-height:1.75; '
         f'max-width:620px; margin:0 auto;">'
         f"Voter education and policy advocacy are how the gap between "
-        f'<b style="color:{SLATE_900};">what officials say</b> and '
+        f'<b style="color:{SLATE_900};">what is reported</b> and '
         f'<b style="color:{PURPLE};">what the data shows</b> gets closed. '
         f"This dashboard is one tool &mdash; read past press releases, "
         f"ask harder questions, and vote on what the data reveals, not "
