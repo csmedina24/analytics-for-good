@@ -1,10 +1,10 @@
-date,speaker,event,quote,mentions_displacement,source
-2025-02-06,Mayor Lurie,Task Force Launch,"Helping people feel safe walking downtown is the key to unleashing our city's comeback.",No,SF.gov
-2025-02-06,Chief Bill Scott,Task Force Launch,"Officers can focus on facilitating safe and clean streets in our most heavily traveled corridors.",No,SF.gov
-2025-02-06,DA Brooke Jenkins,Task Force Launch,"New tools and resources to address challenging public safety concerns.",No,SF.gov
-2025-04-18,Mayor Lurie,100-Day Report,"Street encampments are dropping and violent crime is down 15%.",No,KQED
-2025-04-14,Mayor Lurie,Mission Local Interview,"Listen we acknowledge displacement. That's going to happen. We're going to follow it wherever it goes.",Yes,Mission Local
-2025-05-15,Cmdr. Derrick Lew,Board of Supervisors Hearing,"Displacement is a known symptom of the plain fact that we don't have the resources to blanket the entire city.",Yes,48 Hills
-2025-12-15,Mayor Lurie,Union Square Winter Walk,"This city is safe. Crime is down 30% and car break-ins down 44%.",No,ABC7
-2026-01-15,Mayor Lurie,State of the City,"Homicides haven't been this low since 1954. SF is no longer a safe haven for those who want to sell drugs.",No,Mission Local
-2026-01-15,Chief Lew,Year-End Crime Stats,"Historic reductions in crime show what's possible when we focus relentlessly on public safety.",No,SFPD
+date,speaker,event,quote,mentions_displacement,source,url
+2025-02-06,Mayor Lurie,Task Force Launch,"Helping people feel safe walking downtown is the key to unleashing our city's comeback.",No,SF.gov,https://www.sf.gov/mayor-lurie-launches-sfpd-hospitality-task-force-major-new-effort-to-strengthen-public-safety-drive-economic-comeback
+2025-02-06,Chief Bill Scott,Task Force Launch,"Officers can focus on facilitating safe and clean streets in our most heavily traveled corridors.",No,SF.gov,https://www.sf.gov/mayor-lurie-launches-sfpd-hospitality-task-force-major-new-effort-to-strengthen-public-safety-drive-economic-comeback
+2025-02-06,DA Brooke Jenkins,Task Force Launch,"New tools and resources to address challenging public safety concerns.",No,SF.gov,https://www.sf.gov/mayor-lurie-launches-sfpd-hospitality-task-force-major-new-effort-to-strengthen-public-safety-drive-economic-comeback
+2025-04-18,Mayor Lurie,100-Day Report,"Street encampments are dropping and violent crime is down 15%.",No,KQED,https://www.kqed.org/news/12036408/sf-mayor-daniel-lurie-touts-progress-crime-homelessness-first-100-days
+2025-04-14,Mayor Lurie,Mission Local Interview,"Listen we acknowledge displacement. That's going to happen. We're going to follow it wherever it goes.",Yes,Mission Local,https://missionlocal.org/2025/04/interview-mayor-lurie-talks-16th-and-mission-and-how-s-f-wont-arrest-our-way-out-of-this-problem/
+2025-05-15,Cmdr. Derrick Lew,Board of Supervisors Hearing,"Displacement is a known symptom of the plain fact that we don't have the resources to blanket the entire city.",Yes,48 Hills,https://48hills.org/2025/05/cops-admit-they-are-moving-drug-problems-from-one-neighborhood-to-another/
+2025-12-15,Mayor Lurie,Union Square Winter Walk,"This city is safe. Crime is down 30% and car break-ins down 44%.",No,ABC7,https://abc7news.com/post/san-francisco-union-square-transforms-holiday-hub-mayor-daniel-lurie-announces-decline-city-crimes/18285140/
+2026-01-15,Mayor Lurie,State of the City,"Homicides haven't been this low since 1954. SF is no longer a safe haven for those who want to sell drugs.",No,Mission Local,https://missionlocal.org/2026/01/lurie-2025-stateofcity/
+2026-01-15,Chief Lew,Year-End Crime Stats,"Historic reductions in crime show what's possible when we focus relentlessly on public safety.",No,SFPD,https://www.sanfranciscopolice.org/news/san-francisco-has-lowest-homicide-rate-70-years-declines

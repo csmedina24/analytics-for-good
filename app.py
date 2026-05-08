@@ -23,6 +23,354 @@ RED = "#DC2626"
 GREEN = "#16A34A"
 AMBER = "#F59E0B"
 PURPLE = "#7C3AED"
+NAVY = "#1E3A8A"
+SLATE_900 = "#0F172A"
+SLATE_700 = "#334155"
+SLATE_500 = "#64748B"
+SLATE_200 = "#E2E8F0"
+SLATE_50 = "#F8FAFC"
+
+# Consistent zone colors used across the dashboard
+ZONE_COLORS = {
+    "Hospitality Zone": "#16A34A",      # green = treated/downtown
+    "Mission District": "#DC2626",      # red = absorbing displacement
+    "SoMa (Southern)": "#F59E0B",       # amber = also absorbing
+    "Rest of SF": "#2563EB",            # blue = baseline comparison
+}
+
+
+# ── GLOBAL CSS — modern typography, spacing, and surface design ──
+st.markdown(
+    """
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+
+    <style>
+    /* ── 1. Modern font stack — Inter for UI, Instrument Serif for headlines ── */
+    html, body, [class*="css"], .stApp, .stMarkdown, .stMarkdown p,
+    [data-testid="stMetricLabel"], [data-testid="stMetricValue"],
+    .stTabs, .stButton, .stSelectbox, .stTextInput {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                     Helvetica, Arial, sans-serif !important;
+        font-feature-settings: 'cv11', 'ss01', 'ss03';
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── 2. App background — softer warm off-white ── */
+    .stApp, [data-testid="stAppViewContainer"] {
+        background-color: #FAFAF9;
+    }
+    .main .block-container {
+        padding-top: 2.6rem;
+        max-width: 1180px;
+    }
+
+    /* ── 3. Refined typographic hierarchy ── */
+    h1, h2, h3, h4 {
+        color: #0A0A0A;
+        letter-spacing: -0.022em;
+        font-weight: 700;
+    }
+    h1 {
+        font-size: 2.5rem;
+        line-height: 1.05;
+        font-weight: 800;
+    }
+    h2 {
+        font-size: 1.7rem;
+        line-height: 1.2;
+        margin-top: 1.6em;
+        margin-bottom: 0.5em;
+        letter-spacing: -0.024em;
+    }
+    h3 {
+        font-size: 1.35rem;
+        line-height: 1.3;
+        margin-top: 1.3em;
+        font-weight: 700;
+    }
+    h4 {
+        font-size: 1.0rem;
+        font-weight: 600;
+        color: #27272A;
+        letter-spacing: -0.01em;
+    }
+
+    /* ── 4. Body text — readable, slightly larger ── */
+    .stMarkdown, .stMarkdown p, p {
+        font-size: 1.0rem;
+        line-height: 1.62;
+        color: #27272A;
+        font-weight: 400;
+    }
+
+    /* ── 5. Captions — modern muted styling ── */
+    [data-testid="stCaptionContainer"] {
+        font-size: 0.875rem;
+        color: #71717A;
+        line-height: 1.55;
+    }
+
+    /* ── 6. Metric components — refined display ── */
+    [data-testid="stMetricValue"] {
+        font-size: 1.85rem;
+        font-weight: 700;
+        color: #0A0A0A;
+        letter-spacing: -0.02em;
+    }
+    [data-testid="stMetricLabel"] {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #71717A;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+    [data-testid="stMetricDelta"] {
+        font-size: 0.92rem;
+        font-weight: 500;
+    }
+
+    /* ── 7. Expander — softer modern styling ── */
+    .streamlit-expanderHeader, [data-testid="stExpander"] summary {
+        background-color: #F4F4F5;
+        border-radius: 10px;
+        font-weight: 600;
+        color: #1E3A8A;
+        border: 1px solid #E4E4E7;
+        padding: 12px 18px !important;
+        transition: background-color 0.15s ease;
+    }
+    [data-testid="stExpander"] summary:hover {
+        background-color: #ECECEE;
+    }
+    [data-testid="stExpander"] {
+        border: none;
+        box-shadow: none;
+    }
+
+    /* ── 8. Blockquote — refined pull quote ── */
+    blockquote {
+        background: linear-gradient(135deg, #FAFAF9 0%, #F4F4F5 100%);
+        border-left: 3px solid #7C3AED;
+        padding: 16px 24px;
+        border-radius: 4px;
+        margin: 14px 0;
+        font-size: 1.0rem;
+        color: #27272A;
+        font-style: normal;
+    }
+
+    /* ── 9. Tab navigation — sleeker ── */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        border-bottom: 1px solid #E4E4E7;
+    }
+    .stTabs [data-baseweb="tab-list"] button {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 500;
+        font-size: 0.95rem;
+        color: #71717A;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        letter-spacing: -0.005em;
+        transition: color 0.15s ease;
+    }
+    .stTabs [data-baseweb="tab-list"] button:hover {
+        color: #27272A;
+    }
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+        color: #0A0A0A;
+        font-weight: 600;
+        border-bottom-color: #7C3AED !important;
+        border-bottom-width: 2.5px !important;
+    }
+
+    /* ── 10. Native st.info / st.success / st.warning — modernize ── */
+    [data-testid="stAlert"] {
+        border-radius: 12px;
+        border-left-width: 4px;
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    /* ── 11. Buttons — modern outline/fill ── */
+    .stButton > button {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 500;
+        border-radius: 8px;
+        border: 1px solid #E4E4E7;
+        transition: all 0.15s ease;
+    }
+    .stButton > button:hover {
+        border-color: #7C3AED;
+        color: #7C3AED;
+    }
+
+    /* ── 12. Divider — softer ── */
+    hr {
+        border: 0;
+        height: 1px;
+        background-color: #E4E4E7;
+        margin: 2em 0;
+    }
+
+    /* ── 13. Code blocks — modern surface ── */
+    code {
+        background-color: #F4F4F5;
+        border: 1px solid #E4E4E7;
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-size: 0.88em;
+        color: #18181B;
+        font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    }
+
+    /* ── 14. Selectbox — cleaner ── */
+    .stSelectbox label {
+        font-weight: 500;
+        font-size: 0.88rem;
+        color: #52525B;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ── Modern matplotlib defaults ────────────────
+import matplotlib as mpl
+mpl.rcParams.update({
+    "font.family": ["Inter", "DejaVu Sans", "sans-serif"],
+    "font.size": 10,
+    "axes.titlesize": 12,
+    "axes.titleweight": "bold",
+    "axes.titlecolor": "#0A0A0A",
+    "axes.labelcolor": "#52525B",
+    "axes.labelsize": 10,
+    "axes.edgecolor": "#E4E4E7",
+    "axes.linewidth": 1.0,
+    "axes.grid": True,
+    "axes.grid.axis": "y",
+    "grid.color": "#E4E4E7",
+    "grid.linestyle": "-",
+    "grid.linewidth": 0.6,
+    "grid.alpha": 0.7,
+    "xtick.color": "#71717A",
+    "ytick.color": "#71717A",
+    "xtick.labelsize": 9,
+    "ytick.labelsize": 9,
+    "lines.linewidth": 2.4,
+    "lines.markersize": 5,
+    "legend.frameon": False,
+    "legend.fontsize": 9.5,
+    "figure.facecolor": "#FAFAF9",
+    "axes.facecolor": "#FAFAF9",
+    "savefig.facecolor": "#FAFAF9",
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+})
+
+
+# ── HELPERS for visual consistency ────────────
+def style_axes(ax, title=None, xlabel=None, ylabel=None, grid=True):
+    """Apply consistent styling to a matplotlib axis."""
+    if title:
+        ax.set_title(title, fontweight="bold", fontsize=12, color=SLATE_900,
+                     loc="left", pad=10)
+    if xlabel:
+        ax.set_xlabel(xlabel, fontsize=10, color=SLATE_700)
+    if ylabel:
+        ax.set_ylabel(ylabel, fontsize=10, color=SLATE_700)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_color(SLATE_200)
+    ax.spines["bottom"].set_color(SLATE_200)
+    ax.tick_params(colors=SLATE_700, labelsize=9)
+    if grid:
+        ax.grid(True, axis="y", linestyle="--", alpha=0.4, color=SLATE_200)
+        ax.set_axisbelow(True)
+
+
+def hero_stat_card(label, big_number, sub_text, accent_color):
+    """Styled HTML card for a single dramatic statistic."""
+    return f"""
+    <div style="
+        border-left: 5px solid {accent_color};
+        background: linear-gradient(90deg, {accent_color}10 0%, white 80%);
+        padding: 18px 22px;
+        border-radius: 10px;
+        height: 100%;
+    ">
+        <div style="font-size: 0.78em; color: {SLATE_500}; font-weight: 700;
+                    letter-spacing: 1.2px; margin-bottom: 4px;">
+            {label}
+        </div>
+        <div style="font-size: 2.1em; font-weight: 800; color: {accent_color};
+                    line-height: 1.1; margin-bottom: 6px;">
+            {big_number}
+        </div>
+        <div style="font-size: 0.92em; color: {SLATE_700}; line-height: 1.4;">
+            {sub_text}
+        </div>
+    </div>
+    """
+
+
+def takeaway_box(title, body, color=PURPLE):
+    """Color-accented callout card for a key takeaway."""
+    return f"""
+    <div style="
+        background-color: {color}10;
+        border-left: 5px solid {color};
+        padding: 16px 22px;
+        border-radius: 8px;
+        margin: 14px 0 18px 0;
+    ">
+        <div style="font-size: 0.78em; color: {color}; font-weight: 700;
+                    letter-spacing: 1.2px; margin-bottom: 6px;">
+            {title}
+        </div>
+        <div style="font-size: 0.98em; color: {SLATE_900}; line-height: 1.5;">
+            {body}
+        </div>
+    </div>
+    """
+
+
+def summary_card(eyebrow, headline_number, headline_label, body, accent_color):
+    """
+    Three-part executive-summary card combining a big stat with narrative framing.
+    Used at the top of each policy tab to convey the full picture before details.
+    """
+    return f"""
+    <div style="
+        background: white;
+        border-top: 5px solid {accent_color};
+        border-radius: 10px;
+        padding: 22px 24px;
+        height: 100%;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08),
+                    0 1px 2px rgba(15, 23, 42, 0.04);
+    ">
+        <div style="font-size: 0.75em; color: {accent_color}; font-weight: 700;
+                    letter-spacing: 1.5px; margin-bottom: 14px;">
+            {eyebrow}
+        </div>
+        <div style="font-size: 2.2em; font-weight: 800; color: {SLATE_900};
+                    line-height: 1.0; margin-bottom: 4px;">
+            {headline_number}
+        </div>
+        <div style="font-size: 0.85em; color: {SLATE_500}; font-weight: 600;
+                    margin-bottom: 12px; text-transform: uppercase;
+                    letter-spacing: 0.5px;">
+            {headline_label}
+        </div>
+        <div style="font-size: 0.95em; color: {SLATE_700}; line-height: 1.5;">
+            {body}
+        </div>
+    </div>
+    """
 
 
 
@@ -117,14 +465,279 @@ def coef_chart(model, keep_vars, labels, title, color):
 
 
 # ── PAGE ──────────────────────────────────────
-st.title("Bringing SF Back?")
-st.markdown("Who benefits from downtown revitalization -- and where does the data diverge from the narrative?")
+# Animated entrance: title fades in, then "?", then subtitle, then tabs.
+st.markdown(
+    """
+    <style>
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.4); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+    .hero-title {
+        font-size: 3.2rem;
+        font-weight: 800;
+        color: #0F172A;
+        letter-spacing: -0.02em;
+        line-height: 1.05;
+        margin: 0.4em 0 0 0;
+        opacity: 0;
+        animation: fadeUp 0.7s ease-out 0.1s forwards;
+    }
+    .hero-q {
+        display: inline-block;
+        color: #7C3AED;
+        opacity: 0;
+        animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.0s forwards;
+        transform-origin: bottom left;
+    }
+    .hero-subtitle {
+        font-size: 1.15rem;
+        color: #64748B;
+        font-weight: 400;
+        line-height: 1.45;
+        margin: 0.5em 0 1.3em 0;
+        max-width: 60ch;
+        opacity: 0;
+        animation: fadeUp 0.7s ease-out 1.8s forwards;
+    }
+    .hero-tabs-wrap {
+        opacity: 0;
+        animation: fadeUp 0.6s ease-out 2.6s forwards;
+    }
+    .hero-arrow-down {
+        text-align: center;
+        font-size: 1.5rem;
+        color: #7C3AED;
+        opacity: 0;
+        animation: fadeUp 0.6s ease-out 2.6s forwards,
+                   bobble 1.6s ease-in-out 3.4s infinite;
+        margin: 0.4em 0 0.2em 0;
+    }
+    @keyframes bobble {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(6px); }
+    }
 
-tab0, tab1, tab2 = st.tabs([
+    /* Optional: respect users who prefer reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        .hero-title, .hero-q, .hero-subtitle,
+        .hero-tabs-wrap, .hero-arrow-down {
+            animation: none;
+            opacity: 1;
+        }
+    }
+    </style>
+
+    <div class="hero-title">
+        Bringing SF Back<span class="hero-q">?</span>
+    </div>
+    <div class="hero-subtitle">
+        Who benefits from downtown revitalization &mdash; and where does the
+        data diverge from the narrative?
+    </div>
+    <div class="hero-arrow-down">&darr;</div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Tabs (wrapped so they fade in slightly after the subtitle)
+st.markdown('<div class="hero-tabs-wrap">', unsafe_allow_html=True)
+tab0, tab1, tab2, tab3 = st.tabs([
     "Overview",
     "Hospitality Task Force",
     "Office-to-Residential & DRD",
+    "Why is this important?",
 ])
+st.markdown('</div>', unsafe_allow_html=True)
+
+
+# Helper: render a styled "next-tab" call-to-action card at the bottom
+# of each tab. Renders as a components.html iframe so the embedded JS can
+# reach into the parent document, find the matching tab button by label,
+# and click it — giving us programmatic tab switching that st.tabs doesn't
+# expose natively.
+import streamlit.components.v1 as _components
+
+def next_tab_arrow(next_label, color, last=False):
+    """Render a 'Next →' call-to-action that navigates to the next tab on click."""
+    if last:
+        body = (
+            f'<div style="font-size: 0.78em; color: {SLATE_500}; '
+            f'font-weight: 700; letter-spacing: 1.2px; margin-bottom: 4px;">'
+            f"YOU'VE REACHED THE END</div>"
+            f'<div style="font-size: 1.15em; font-weight: 700; '
+            f'color: {SLATE_900};">Both policies, examined.</div>'
+            f'<div style="font-size: 0.92em; color: {SLATE_700}; '
+            f'margin-top: 6px;">Click any tab above to revisit a section.</div>'
+        )
+        clickable_attrs = ""
+        cursor = "default"
+    else:
+        body = (
+            f'<div style="font-size: 0.78em; color: {color}; '
+            f'font-weight: 700; letter-spacing: 1.2px; margin-bottom: 4px;">'
+            f'CONTINUE THE STORY</div>'
+            f'<div style="font-size: 1.25em; font-weight: 700; '
+            f'color: {SLATE_900};">'
+            f'Next: {next_label} &nbsp;<span style="color: {color};">&rarr;</span>'
+            f'</div>'
+            f'<div style="font-size: 0.88em; color: {SLATE_500}; '
+            f'margin-top: 6px;">Click here to jump to <b>{next_label}</b>.</div>'
+        )
+        clickable_attrs = f' data-target-tab="{next_label}" class="tab-link"'
+        cursor = "pointer"
+
+    html = f"""
+    <div{clickable_attrs} style="
+        margin-top: 16px;
+        padding: 22px 26px;
+        background: linear-gradient(135deg, {color}10 0%, white 100%);
+        border-left: 5px solid {color};
+        border-radius: 12px;
+        cursor: {cursor};
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        font-family: 'Inter', -apple-system, sans-serif;
+    "
+    onmouseover="if (this.dataset.targetTab) {{ this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'; }}"
+    onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='none';">
+        {body}
+    </div>
+    <script>
+    (function() {{
+        const card = document.querySelector('.tab-link');
+        if (!card) return;
+        card.addEventListener('click', function() {{
+            const label = card.dataset.targetTab;
+            const parentDoc = window.parent.document;
+            const tabs = parentDoc.querySelectorAll('button[role="tab"]');
+            for (const t of tabs) {{
+                if ((t.innerText || '').trim() === label) {{
+                    t.click();
+                    parentDoc.defaultView.scrollTo({{ top: 0, behavior: 'smooth' }});
+                    break;
+                }}
+            }}
+        }});
+    }})();
+    </script>
+    """
+    _components.html(html, height=160)
+
+
+# ══════════════════════════════════════════════
+# FLOATING "BACK TO TOP" BUTTON + AUTO-SCROLL ON TAB CHANGE
+# (injected via component so JS actually runs)
+# ══════════════════════════════════════════════
+import streamlit.components.v1 as components
+
+components.html(
+    """
+    <script>
+    (function() {
+        const parent = window.parent;
+        const doc = parent.document;
+
+        // Find every plausible scroll container Streamlit might use, plus
+        // window/document. We'll scroll all of them on click — harmless to
+        // scroll a non-scrolling element.
+        const getScrollTargets = () => {
+            const targets = [parent];
+            const selectors = [
+                'html', 'body',
+                '[data-testid="stAppViewContainer"]',
+                '[data-testid="stMain"]',
+                'section.main',
+                '.main',
+                '.block-container',
+                '[data-testid="stMainBlockContainer"]',
+            ];
+            selectors.forEach(sel => {
+                const el = doc.querySelector(sel);
+                if (el) targets.push(el);
+            });
+            return targets;
+        };
+
+        const scrollAllToTop = () => {
+            getScrollTargets().forEach(t => {
+                try {
+                    if (t === parent || t === window) {
+                        t.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        t.scrollTo({ top: 0, behavior: 'smooth' });
+                        // fallback for elements that don't support smooth
+                        t.scrollTop = 0;
+                    }
+                } catch (e) { /* ignore */ }
+            });
+        };
+
+        // ── 1. Add the floating button (only once across reruns) ──
+        if (!doc.getElementById('scroll-top-fab')) {
+            const btn = doc.createElement('button');
+            btn.id = 'scroll-top-fab';
+            btn.innerHTML = '&uarr;';
+            btn.title = 'Back to top';
+            btn.style.cssText = `
+                position: fixed;
+                bottom: 28px;
+                right: 28px;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #7C3AED 0%, #1E3A8A 100%);
+                color: white;
+                border: none;
+                cursor: pointer;
+                box-shadow: 0 4px 14px rgba(124, 58, 237, 0.45);
+                font-size: 1.4rem;
+                font-weight: 700;
+                z-index: 999999;
+                transition: transform 0.18s ease, box-shadow 0.18s ease;
+                opacity: 1;
+                pointer-events: auto;
+            `;
+            btn.onmouseenter = () => {
+                btn.style.transform = 'translateY(-3px)';
+                btn.style.boxShadow = '0 6px 20px rgba(124, 58, 237, 0.6)';
+            };
+            btn.onmouseleave = () => {
+                btn.style.transform = 'translateY(0)';
+                btn.style.boxShadow = '0 4px 14px rgba(124, 58, 237, 0.45)';
+            };
+            btn.onclick = scrollAllToTop;
+            doc.body.appendChild(btn);
+        }
+
+        // ── 2. Auto-scroll to top whenever a tab button is clicked ──
+        const attachTabListeners = () => {
+            const tabBtns = doc.querySelectorAll(
+                '[data-baseweb="tab-list"] button[role="tab"]'
+            );
+            tabBtns.forEach(t => {
+                if (!t._scrollTopAttached) {
+                    t._scrollTopAttached = true;
+                    t.addEventListener('click', () => {
+                        setTimeout(scrollAllToTop, 80);
+                        setTimeout(scrollAllToTop, 250);
+                    });
+                }
+            });
+        };
+        attachTabListeners();
+
+        // Re-attach if Streamlit re-renders
+        const observer = new MutationObserver(attachTabListeners);
+        observer.observe(doc.body, { childList: true, subtree: true });
+    })();
+    </script>
+    """,
+    height=0,
+)
 
 
 # ══════════════════════════════════════════════
@@ -184,15 +797,6 @@ with tab0:
                 <div style="font-size: 1.4em; font-weight: 700; margin-top: 6px; color: #1E293B;">
                     Hospitality Task Force
                 </div>
-                <div style="font-size: 0.95em; color: #475569; margin-top: 10px; line-height: 1.5;">
-                    A dedicated SFPD unit deployed across Union Square, Moscone, and
-                    Yerba Buena Gardens <b>20 hours a day, 365 days a year</b>.
-                </div>
-                <div style="font-size: 0.85em; color: #64748B; margin-top: 14px;">
-                    <b>Launched:</b> Feb 2025<br>
-                    <b>Coverage:</b> Downtown commercial core<br>
-                    <b>Stated goal:</b> Boost downtown recovery via safety
-                </div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -214,16 +818,6 @@ with tab0:
                 <div style="font-size: 1.4em; font-weight: 700; margin-top: 6px; color: #1E293B;">
                     Downtown Revitalization District
                 </div>
-                <div style="font-size: 0.95em; color: #475569; margin-top: 10px; line-height: 1.5;">
-                    A tax-increment financing district that returns up to
-                    <b>64.59%</b> of new property tax revenue to developers
-                    converting offices to housing.
-                </div>
-                <div style="font-size: 0.85em; color: #64748B; margin-top: 14px;">
-                    <b>Adopted:</b> Feb 2026<br>
-                    <b>District cap:</b> $1.22 billion over 30 years<br>
-                    <b>Status:</b> 0 completed conversions
-                </div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -235,8 +829,8 @@ with tab0:
     # ── How to Read This Dashboard ──
     st.markdown("### How each policy is examined")
     st.markdown(
-        "Both tabs follow the same three-part structure -- moving from what "
-        "officials say, to what the data shows, to who actually benefits."
+        "Both policies are examined through the same lens: what officials "
+        "say, what the data shows, and who benefits versus who pays."
     )
 
     col1, col2, col3 = st.columns(3)
@@ -251,16 +845,12 @@ with tab0:
                 border-radius: 6px;
                 height: 100%;
             ">
-                <div style="font-size: 0.8em; color: #1E40AF; font-weight: 700; letter-spacing: 1px;">
-                    PART 1
-                </div>
-                <div style="font-size: 1.2em; font-weight: 700; margin-top: 4px; color: #1E293B;">
+                <div style="font-size: 1.2em; font-weight: 700; color: #1E293B;">
                     The Promise
                 </div>
-                <div style="font-size: 0.93em; color: #475569; margin-top: 10px; line-height: 1.5;">
-                    What the policy says it will do, in officials' own words --
-                    drawn from press releases, the State of the City, and on-record
-                    statements.
+                <div style="font-size: 0.93em; color: #475569; margin-top: 8px; line-height: 1.5;">
+                    What officials say each policy will do &mdash; in mayoral
+                    speeches, press releases, and on-record statements.
                 </div>
             </div>
             """,
@@ -277,16 +867,13 @@ with tab0:
                 border-radius: 6px;
                 height: 100%;
             ">
-                <div style="font-size: 0.8em; color: #92400E; font-weight: 700; letter-spacing: 1px;">
-                    PART 2
-                </div>
-                <div style="font-size: 1.2em; font-weight: 700; margin-top: 4px; color: #1E293B;">
+                <div style="font-size: 1.2em; font-weight: 700; color: #1E293B;">
                     The Data
                 </div>
-                <div style="font-size: 0.93em; color: #475569; margin-top: 10px; line-height: 1.5;">
-                    What the data actually shows -- monthly crime trends, permit
-                    pipelines, rent indices, and tax-flow math from city, state,
-                    and journalism sources.
+                <div style="font-size: 0.93em; color: #475569; margin-top: 8px; line-height: 1.5;">
+                    What the policy actually delivers &mdash; monthly crime
+                    trends for Hospitality, and the subsidy mechanics and
+                    affordability tiers behind the DRD.
                 </div>
             </div>
             """,
@@ -303,38 +890,19 @@ with tab0:
                 border-radius: 6px;
                 height: 100%;
             ">
-                <div style="font-size: 0.8em; color: #14532D; font-weight: 700; letter-spacing: 1px;">
-                    PART 3
-                </div>
-                <div style="font-size: 1.2em; font-weight: 700; margin-top: 4px; color: #1E293B;">
+                <div style="font-size: 1.2em; font-weight: 700; color: #1E293B;">
                     Who Benefits, Who Pays
                 </div>
-                <div style="font-size: 0.93em; color: #475569; margin-top: 10px; line-height: 1.5;">
-                    Distributional analysis -- visitors, voters, and developers
-                    against residents in adjacent neighborhoods absorbing the costs.
+                <div style="font-size: 0.93em; color: #475569; margin-top: 8px; line-height: 1.5;">
+                    Who each policy actually serves &mdash; and which residents
+                    absorb the costs the official narratives leave out.
                 </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-    st.markdown("")
-    st.markdown("---")
-
-    # ── Where to start ──
-    st.markdown("### Where to start")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown(
-            "**Start with the Hospitality Task Force tab** if you're new -- it's "
-            "the most complete narrative arc, with both quantitative data and "
-            "resident voices."
-        )
-    with col2:
-        st.markdown(
-            "**Visit the DRD tab** for the housing side -- legislative history, "
-            "financial flows, and analysis of who the program is designed to serve."
-        )
+    next_tab_arrow("Hospitality Task Force", RED)
 
 
 # ══════════════════════════════════════════════
@@ -343,33 +911,105 @@ with tab0:
 
 with tab2:
     st.subheader("Downtown Revitalization District (DRD)")
-    st.markdown("AB 2488 (2024) authorized the Downtown Revitalization District, amended by "
-                "AB 1445 (2025), with the Financing Plan adopted February 12, 2026. "
-                "This analysis examines the policy's structure, its practical challenges "
-                "and benefits, and what may be driving it beyond the stated goal of "
-                "'increasing housing and decreasing vacancy.'")
-
-    # ── Legislative History ────────────────────
-    st.markdown("#### How We Got Here")
     st.markdown(
-        "| Year | Action | Key Players |\n"
-        "|------|--------|-------------|\n"
-        "| **2024** | **AB 2488** — establishes the DRD framework in state law | "
-        "Mayor London Breed + Assemblymember Matt Haney |\n"
-        "| **Mar 2025** | **Ordinance 20-25** — waives SF's inclusionary housing (Sec. 415) "
-        "and impact fees for C-3 conversions (first 7M sq ft) | Mayor Daniel Lurie |\n"
-        "| **2025** | **AB 1445** — amends AB 2488 | Assemblymember Matt Haney |\n"
-        "| **Feb 2026** | **Financing Plan adopted** — defines boundaries, tax increment "
-        "allocation, and $1.22B district cap | Mayor Daniel Lurie |"
+        "The Downtown Revitalization District (DRD) is a 30-year tax subsidy "
+        "meant to convert empty downtown offices into housing. Developers keep "
+        "up to **64.59%** of a converted building's new property taxes; the "
+        "city forgoes that revenue, up to a **$1.22 billion** cap."
     )
-    st.caption("The DRD policy framework was created under the Breed administration. "
-               "The Lurie administration inherited it and made key implementation decisions — "
-               "including waiving local affordable housing requirements and adopting the financing plan.")
+
+    # ── Executive summary: the full picture in 30 seconds ──
+    st.markdown(
+        '<div style="font-size: 0.78em; color: ' + SLATE_500 + '; '
+        'font-weight: 700; letter-spacing: 1.5px; margin: 8px 0 12px 0;">'
+        'THE FULL PICTURE &mdash; SCROLL FOR DETAILS'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    hcol1, hcol2, hcol3 = st.columns(3)
+    with hcol1:
+        st.markdown(summary_card(
+            "THE PROMISE",
+            "$1.22B",
+            "Promised investment in downtown revitalization",
+            "Mayor Lurie's <i>Heart of the City</i> plan promises to "
+            "transform empty downtown towers into thousands of new homes "
+            "&mdash; restoring foot traffic, the tax base, and street life "
+            "by returning up to <b>64.59%</b> of new property taxes to "
+            "developers who convert offices into housing.",
+            BLUE,
+        ), unsafe_allow_html=True)
+    with hcol2:
+        st.markdown(summary_card(
+            "THE DATA",
+            "$3,665",
+            "Median market rent in the first conversions",
+            "The DRD's affordability is <b>phased</b>: the first "
+            "<b>1,875 units</b> face <b>no affordability requirements</b>, "
+            "and only later tiers begin to require modest affordable "
+            "shares. \"Market-rate\" here means roughly <b>$3,665/month</b> "
+            "&mdash; in line with what downtown apartments already rent "
+            "for today.",
+            RED,
+        ), unsafe_allow_html=True)
+    with hcol3:
+        st.markdown(summary_card(
+            "WHO BENEFITS / WHO PAYS",
+            "0",
+            "Affordable units in the first phase",
+            "SF's housing crisis is about <b>affordability</b> &mdash; "
+            "and this policy doesn't address it. <b>Developers</b> get "
+            "tax savings, <b>high earners</b> get new units, and the "
+            "residents actually priced out of downtown see no relief.",
+            PURPLE,
+        ), unsafe_allow_html=True)
+
+    st.markdown("")
+    st.markdown("---")
+
+    # ── Timeline + Map (side-by-side, collapsible) ──
+    ctx_left, ctx_right = st.columns(2)
+
+    with ctx_left:
+        with st.expander("&#128221;&nbsp; **How We Got Here** &mdash; legislative timeline", expanded=False):
+            st.markdown(
+                "| Year | Action |\n"
+                "|------|--------|\n"
+                "| **2024** | **AB 2488** — DRD framework established in state law |\n"
+                "| **Mar 2025** | **Ordinance 20-25** — waives SF's inclusionary "
+                "housing & impact fees for C-3 conversions |\n"
+                "| **2025** | **AB 1445** — amends AB 2488 |\n"
+                "| **Feb 2026** | **Financing Plan adopted** — defines boundaries, "
+                "$1.22B district cap |"
+            )
+            st.caption(
+                "Created under the Breed administration; the Lurie administration "
+                "inherited the framework and made key implementation choices — "
+                "including waiving local affordable housing requirements."
+            )
+
+    with ctx_right:
+        with st.expander("&#128205;&nbsp; **District Boundaries** &mdash; where the DRD applies", expanded=False):
+            st.image("data/drd_boundary_map.png", use_container_width=True)
+            st.caption(
+                "Approximate boundary based on AB 2488 §62450(h) and the Financing "
+                "Plan (Feb 2026). Covers downtown C-3 zoning districts."
+            )
 
     st.markdown("---")
 
-    # ── Stated Goal: Mayor Lurie ─────────────
-    st.markdown("#### The Stated Goal")
+    # ══════════════════════════════════════════════════════
+    # PART 1: THE PROMISE
+    # ══════════════════════════════════════════════════════
+    st.markdown(
+        f'<div style="display:inline-block; padding: 4px 12px; '
+        f'background-color: {BLUE}15; color: {BLUE}; '
+        f'border-radius: 20px; font-size: 0.8em; font-weight: 700; '
+        f'letter-spacing: 1px; margin-bottom: 6px;">THE PROMISE</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown("## The Stated Goal")
     st.info(
         "\"Through our Heart of the City plan, our administration is accelerating downtown's "
         "recovery by activating our public spaces, prioritizing safe and clean streets, and "
@@ -385,14 +1025,6 @@ with tab2:
         "downtown fund the services that keep the whole city running.\" "
         "([Source: Office of the Mayor, Sept 2025](https://www.sf.gov/news/mayor-lurie-announces-heart-city-plan))"
     )
-
-    # ── DRD Boundary Map ─────────────────────
-    st.markdown("#### District Boundaries")
-    col_map_l, col_map, col_map_r = st.columns([1, 2, 1])
-    with col_map:
-        st.image("data/drd_boundary_map.png", use_container_width=True)
-    st.caption("Approximate boundary based on AB 2488 §62450(h) and the Financing Plan (Feb 2026). "
-               "Covers downtown C-3 zoning districts.")
 
     st.markdown("---")
 
@@ -420,339 +1052,335 @@ with tab2:
                                          * (1 - price_df["office_vacancy_pct"] / 100))
 
     # ══════════════════════════════════════════════════════
-    # PART 1: WHAT IS THE DRD?
+    # PART 2: THE DATA
     # ══════════════════════════════════════════════════════
+    st.markdown(
+        f'<div style="display:inline-block; padding: 4px 12px; '
+        f'background-color: {RED}15; color: {RED}; '
+        f'border-radius: 20px; font-size: 0.8em; font-weight: 700; '
+        f'letter-spacing: 1px; margin-bottom: 6px;">THE DATA</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown("## Policy Structure")
+    st.markdown(
+        "The DRD has two structural pieces: **how the money flows** between "
+        "the city and developers, and **what affordability is required** at "
+        "each tier."
+    )
 
-    st.markdown("## Part 1: What Is the DRD?")
-    st.markdown("Understanding the policy, its structure, and the problem it claims to solve.")
+    fin_col, aff_col = st.columns(2, gap="large")
 
-    st.markdown("---")
-
-    st.markdown("### Program Overview")
-
-    st.markdown("""
-    The DRD finances commercial-to-residential conversions by returning a share of the
-    property tax increment generated by the project for up to **30 years**.
-    """)
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("""
-        **Key eligibility criteria:**
-        - Located within the District boundaries (downtown C-3 zoning districts)
-        - Convert existing Commercial space to Residential use
-        - At least **60% of gross floor area** must be Residential
-        - Must enroll **before** building permit issuance
-        - Enrollment deadline: **December 31, 2032**
-        """)
-    with col2:
-        st.markdown("**How the money flows:**")
+    # ─── FINANCING ──────────────────────────────
+    with fin_col:
+        st.markdown("### Financing")
         st.markdown(
-            "When a developer converts an office building to housing, the property's "
-            "value goes up — and so do its property taxes. Normally that new tax revenue "
-            "goes to the city. Under the DRD, the city **returns up to 64.59%** of that "
-            "increase back to the developer each year for up to **30 years** to help "
-            "offset conversion costs."
+            "When a developer converts an office to housing, the property's "
+            "value &mdash; and its property taxes &mdash; go up. The DRD "
+            "<b>returns up to 64.59%</b> of that increase to the developer "
+            "for up to <b>30 years</b>.",
+            unsafe_allow_html=True,
         )
 
-    # ── Financial Flow Diagram ──────────────
-    fig, ax = plt.subplots(figsize=(10, 3))
-    ax.set_xlim(0, 10)
-    ax.set_ylim(0, 3)
-    ax.set_axis_off()
+        # Visual: split bar showing 64.59 / 35.41 distribution
+        st.markdown(
+            f"""
+            <div style="margin: 22px 0 14px 0;">
+                <div style="font-size: 0.78em; color: {SLATE_500};
+                            font-weight: 700; letter-spacing: 1px;
+                            margin-bottom: 8px;">
+                    HOW EACH NEW TAX DOLLAR IS SPLIT
+                </div>
+                <div style="display: flex; height: 64px; border-radius: 10px;
+                            overflow: hidden;
+                            box-shadow: 0 1px 3px rgba(15,23,42,0.10);">
+                    <div style="background: {BLUE}; color: white;
+                                flex: 64.59;
+                                display: flex; flex-direction: column;
+                                justify-content: center; align-items: center;
+                                padding: 0 10px;">
+                        <div style="font-size: 1.35em; font-weight: 800;
+                                    line-height: 1;">64.59%</div>
+                        <div style="font-size: 0.78em; font-weight: 600;
+                                    opacity: 0.95; margin-top: 3px;">
+                            to Developer
+                        </div>
+                    </div>
+                    <div style="background: {GREEN}; color: white;
+                                flex: 35.41;
+                                display: flex; flex-direction: column;
+                                justify-content: center; align-items: center;
+                                padding: 0 10px;">
+                        <div style="font-size: 1.35em; font-weight: 800;
+                                    line-height: 1;">35.41%</div>
+                        <div style="font-size: 0.78em; font-weight: 600;
+                                    opacity: 0.95; margin-top: 3px;">
+                            to City
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between;
+                            margin-top: 8px; font-size: 0.78em;
+                            color: {SLATE_500};">
+                    <span>30-year subsidy</span>
+                    <span>Schools, transit, services</span>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    # Boxes
-    boxes = [
-        (0.3, 1.2, "Office → Housing\nConversion", "#E0E7FF", BLUE),
-        (3.3, 1.2, "Property Value\nIncreases", "#FEF3C7", AMBER),
-        (6.3, 1.2, "New Tax Revenue\nGenerated", "#D1FAE5", GREEN),
+        st.markdown(
+            f"<div style='font-size: 0.92em; color: {SLATE_700}; "
+            f"margin-top: 6px;'><b>District cap:</b> $1.22 billion in "
+            f"total tax revenue over 30 years.</div>",
+            unsafe_allow_html=True,
+        )
+
+    # ─── AFFORDABILITY ──────────────────────────
+    with aff_col:
+        st.markdown("### Affordability")
+        st.markdown(
+            "Affordability requirements rise in tiers as enrollment grows. "
+            "The first projects face none &mdash; later ones face more, "
+            "but only if anyone gets that far.",
+            unsafe_allow_html=True,
+        )
+
+        # Tier ladder — three stacked cards, color-coded for severity
+        tiers = [
+            {
+                "n": "1",
+                "color": GREEN,
+                "threshold": "First 1.5M sq ft (~1,875 units)",
+                "required_pct": "0%",
+                "required_text": "<b>No affordability required</b> &mdash; "
+                                 "100% market-rate allowed",
+            },
+            {
+                "n": "2",
+                "color": AMBER,
+                "threshold": "1.5M &ndash; 7M sq ft",
+                "required_pct": "5&ndash;10%",
+                "required_text": "State minimums only "
+                                 "(local SF inclusionary still waived)",
+            },
+            {
+                "n": "3",
+                "color": RED,
+                "threshold": "7M+ sq ft",
+                "required_pct": "~25%",
+                "required_text": "State minimums <b>plus</b> full SF "
+                                 "inclusionary requirements",
+            },
+        ]
+
+        cards_html = '<div style="margin-top: 14px;">'
+        for t in tiers:
+            cards_html += (
+                f'<div style="display:flex;align-items:stretch;margin-bottom:10px;'
+                f'border-radius:10px;overflow:hidden;'
+                f'box-shadow:0 1px 3px rgba(15,23,42,0.08),0 1px 2px rgba(15,23,42,0.04);'
+                f'background:white;">'
+                f'<div style="background:{t["color"]};color:white;padding:14px 12px;'
+                f'min-width:78px;display:flex;flex-direction:column;'
+                f'justify-content:center;align-items:center;">'
+                f'<div style="font-size:0.65em;letter-spacing:1.2px;'
+                f'font-weight:700;opacity:0.9;">TIER</div>'
+                f'<div style="font-size:1.9em;font-weight:800;line-height:1;">{t["n"]}</div>'
+                f'</div>'
+                f'<div style="flex:1;padding:12px 16px;display:flex;'
+                f'flex-direction:column;justify-content:center;">'
+                f'<div style="font-size:0.78em;color:{SLATE_500};'
+                f'font-weight:600;text-transform:uppercase;'
+                f'letter-spacing:0.5px;margin-bottom:4px;">{t["threshold"]}</div>'
+                f'<div style="font-size:0.95em;color:{SLATE_900};line-height:1.4;">'
+                f'<span style="color:{t["color"]};font-weight:800;">'
+                f'{t["required_pct"]} affordable</span>'
+                f'&nbsp;&middot;&nbsp; {t["required_text"]}'
+                f'</div>'
+                f'</div>'
+                f'</div>'
+            )
+        cards_html += "</div>"
+        st.markdown(cards_html, unsafe_allow_html=True)
+
+    # ─── Synthesis: The Incentive Race (three scenarios) ──
+    st.markdown(
+        f"<div style='font-size: 0.78em; color: {PURPLE}; font-weight: 700; "
+        f"letter-spacing: 1.5px; margin: 30px 0 6px 0;'>"
+        f"THE INCENTIVE RACE</div>"
+        f"<div style='font-size: 1.18em; font-weight: 700; "
+        f"color: {SLATE_900}; margin-bottom: 8px;'>"
+        f"Why early, market-rate conversions win &mdash; and late, affordable "
+        f"ones get squeezed out.</div>"
+        f"<div style='font-size: 0.95em; color: {SLATE_700}; line-height: 1.55; "
+        f"margin-bottom: 18px;'>"
+        f"The $1.22B subsidy pool drains as conversions enroll, and "
+        f"affordability requirements rise at each tier. Compare what a "
+        f"developer faces at three points in the program:</div>",
+        unsafe_allow_html=True,
+    )
+
+    scenarios = [
+        {
+            "stage": "EARLY",
+            "tier": "Tier 1",
+            "color": GREEN,
+            "pool": "100%",
+            "pool_sub": "$1.22B available",
+            "required": "0%",
+            "required_sub": "No affordability obligation",
+            "verdict": "HIGH INCENTIVE",
+            "blurb": "Maximum subsidy with zero affordability cost &mdash; "
+                     "the most attractive scenario.",
+        },
+        {
+            "stage": "MIDDLE",
+            "tier": "Tier 2",
+            "color": AMBER,
+            "pool": "~50%",
+            "pool_sub": "Pool partly depleted",
+            "required": "5&ndash;10%",
+            "required_sub": "State minimums kick in",
+            "verdict": "MODERATE",
+            "blurb": "Smaller subsidy paired with a new affordability cost "
+                     "&mdash; incentive shrinks.",
+        },
+        {
+            "stage": "LATE",
+            "tier": "Tier 3",
+            "color": RED,
+            "pool": "0%",
+            "pool_sub": "Pool exhausted",
+            "required": "~25%",
+            "required_sub": "Full SF inclusionary",
+            "verdict": "MINIMAL",
+            "blurb": "No subsidy left and the highest affordability bar "
+                     "&mdash; least viable for developers.",
+        },
     ]
-    for x, y, text, fc, ec in boxes:
-        rect = plt.Rectangle((x, y), 2.4, 1.4, facecolor=fc, edgecolor=ec,
-                              linewidth=2, zorder=2, clip_on=False)
-        ax.add_patch(rect)
-        ax.text(x + 1.2, y + 0.7, text, ha="center", va="center",
-                fontsize=10, fontweight="bold", color="#1F2937", zorder=3)
 
-    # Arrows between boxes
-    arrow_style = dict(arrowstyle="->, head_width=0.3, head_length=0.15",
-                       color="#6B7280", lw=2)
-    ax.annotate("", xy=(3.2, 1.9), xytext=(2.8, 1.9), arrowprops=arrow_style)
-    ax.annotate("", xy=(6.2, 1.9), xytext=(5.8, 1.9), arrowprops=arrow_style)
+    sc_cols = st.columns(3, gap="medium")
+    for col, s in zip(sc_cols, scenarios):
+        with col:
+            html = (
+                f'<div style="background:white;border-top:5px solid {s["color"]};'
+                f'border-radius:10px;padding:18px 20px;height:100%;'
+                f'box-shadow:0 1px 3px rgba(15,23,42,0.08),0 1px 2px rgba(15,23,42,0.04);">'
+                f'<div style="font-size:0.72em;color:{s["color"]};font-weight:800;'
+                f'letter-spacing:1.5px;">{s["stage"]}</div>'
+                f'<div style="font-size:0.92em;color:{SLATE_500};font-weight:600;'
+                f'margin-bottom:18px;">{s["tier"]}</div>'
+                f'<div style="font-size:0.7em;color:{SLATE_500};font-weight:700;'
+                f'letter-spacing:1px;text-transform:uppercase;">Subsidy pool</div>'
+                f'<div style="font-size:1.6em;font-weight:800;color:{BLUE};line-height:1.1;">'
+                f'{s["pool"]}</div>'
+                f'<div style="font-size:0.78em;color:{SLATE_500};margin-bottom:14px;">'
+                f'{s["pool_sub"]}</div>'
+                f'<div style="font-size:0.7em;color:{SLATE_500};font-weight:700;'
+                f'letter-spacing:1px;text-transform:uppercase;">Affordability required</div>'
+                f'<div style="font-size:1.6em;font-weight:800;color:{PURPLE};line-height:1.1;">'
+                f'{s["required"]}</div>'
+                f'<div style="font-size:0.78em;color:{SLATE_500};margin-bottom:16px;">'
+                f'{s["required_sub"]}</div>'
+                f'<div style="border-top:1px solid {SLATE_200};margin-bottom:14px;"></div>'
+                f'<div style="display:inline-block;padding:5px 14px;'
+                f'background:{s["color"]};color:white;border-radius:6px;'
+                f'font-weight:800;letter-spacing:1px;font-size:0.82em;'
+                f'margin-bottom:10px;">{s["verdict"]}</div>'
+                f'<div style="font-size:0.88em;color:{SLATE_700};line-height:1.4;">'
+                f'{s["blurb"]}</div>'
+                f'</div>'
+            )
+            st.markdown(html, unsafe_allow_html=True)
 
-    # Split arrow from tax revenue
-    ax.annotate("", xy=(9.5, 2.6), xytext=(8.8, 2.2), arrowprops=arrow_style)
-    ax.annotate("", xy=(9.5, 1.0), xytext=(8.8, 1.4), arrowprops=arrow_style)
-
-    # Labels for the split
-    ax.text(9.6, 2.65, "64.59% → Developer", fontsize=9, fontweight="bold",
-            color=BLUE, va="center")
-    ax.text(9.6, 2.3, "(up to 30 years)", fontsize=8, color="#6B7280", va="center")
-    ax.text(9.6, 1.0, "35.41% → City", fontsize=9, fontweight="bold",
-            color=GREEN, va="center")
-    ax.text(9.6, 0.65, "(schools, transit, services)", fontsize=8,
-            color="#6B7280", va="center")
-
-    ax.set_title("How the DRD Financial Structure Works", fontweight="bold",
-                 fontsize=12, pad=10)
-    plt.tight_layout()
-    st.pyplot(fig)
-    plt.close()
-
-    st.markdown(
-        f"**District-wide cap:** $1.22 billion in total allocated tax revenue &nbsp;|&nbsp; "
-        f"**Admin costs:** capped at 5% of tax revenues"
+    st.caption(
+        "Illustrative &mdash; pool depletion is modeled linearly to the "
+        "Tier 3 threshold; the actual rate depends on per-project tax yields, "
+        "which vary by building. The visual captures the direction of the "
+        "dynamic, not the precise magnitude."
     )
 
-    st.markdown("---")
-
-    # ── Affordability Tiers ──────────────────
-    st.markdown("### Affordable Housing Requirements: Three Tiers")
-    st.markdown("The DRD creates a phased affordability structure. Projects that enroll "
-                "early face fewer requirements -- creating a first-come-first-served race.")
-
-    # Stacked bar showing the three tiers
-    fig, ax = plt.subplots(figsize=(10, 2.5))
-    tier1_end = 1.5
-    tier2_end = 7.0
-    tier3_end = 10.0
-
-    ax.barh(0, tier1_end, left=0, height=0.5, color=GREEN, alpha=0.85,
-            edgecolor="white", linewidth=2)
-    ax.barh(0, tier2_end - tier1_end, left=tier1_end, height=0.5, color=AMBER,
-            alpha=0.85, edgecolor="white", linewidth=2)
-    ax.barh(0, tier3_end - tier2_end, left=tier2_end, height=0.5, color=RED,
-            alpha=0.85, edgecolor="white", linewidth=2)
-
-    ax.text(tier1_end / 2, 0, "Tier 1\nNo additional\naffordability",
-            ha="center", va="center", fontsize=9, fontweight="bold", color="white")
-    ax.text(tier1_end + (tier2_end - tier1_end) / 2, 0,
-            "Tier 2\nState minimums only\n(5-10% affordable)",
-            ha="center", va="center", fontsize=9, fontweight="bold", color="white")
-    ax.text(tier2_end + (tier3_end - tier2_end) / 2, 0,
-            "Tier 3\nState + local\ninclusionary",
-            ha="center", va="center", fontsize=9, fontweight="bold", color="white")
-
-    ax.axvline(tier1_end, color="#374151", linewidth=2, linestyle="-")
-    ax.axvline(tier2_end, color="#374151", linewidth=2, linestyle="-")
-    ax.text(tier1_end, -0.45, "1.5M sq ft\n(~1,875 units)", ha="center",
-            fontsize=9, fontweight="bold", color="#374151")
-    ax.text(tier2_end, -0.45, "7M sq ft\n(~8,750 units)", ha="center",
-            fontsize=9, fontweight="bold", color="#374151")
-
-    ax.set_xlim(0, tier3_end)
-    ax.set_ylim(-0.8, 0.6)
-    ax.set_xlabel("Cumulative Enrolled Conversion Square Footage (millions)", fontsize=10)
-    ax.set_yticks([])
-    ax.set_title("DRD Affordability Thresholds: Who Has to Build Affordable Units?",
-                 fontweight="bold", fontsize=12)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.spines["left"].set_visible(False)
-    plt.tight_layout()
-    st.pyplot(fig)
-    plt.close()
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown("**Tier 1: 0 - 1.5M sq ft**")
-        st.markdown("No state affordability requirements (AB 2488). Local inclusionary "
-                    "(Sec. 415) waived in C-3 districts by Ordinance 20-25 (Mar 2025). "
-                    "These projects can be **100% market-rate**.")
-    with col2:
-        st.markdown("**Tier 2: 1.5M - 7M sq ft**")
-        st.markdown("State minimums kick in -- one of:\n"
-                    "- 5% of rental units at **50% AMI** (55 yrs)\n"
-                    "- 10% of rental units at **80% AMI** (55 yrs)\n"
-                    "- 10% of for-sale units at **120% AMI** (45 yrs)\n\n"
-                    "Local inclusionary (Sec. 415) still waived under Ordinance 20-25.")
-    with col3:
-        st.markdown("**Tier 3: 7M+ sq ft**")
-        st.markdown("Both state minimums **and** SF's local inclusionary housing "
-                    "requirements (Sec. 415) apply. The highest affordability bar.")
-
-    st.caption("Tracking is first-come-first-served based on Notice of Eligibility date. "
-               "Projects that miss the 18-month deadline for a Planning Approval Letter "
-               "get dropped to the bottom of the list and may lose their tier exemption.")
-
-    st.markdown("---")
-
-    # ── The Starting Point: Zero Conversions ─
-    st.markdown("### The Starting Point: Zero Completed Conversions")
-
-    st.error("**As of February 2026, San Francisco has zero completed office-to-residential "
-             "conversions downtown.** Despite years of discussion, high construction costs, "
-             "building code requirements, and zoning barriers have prevented any projects from "
-             "finishing. The DRD program is designed to break this deadlock by providing financial "
-             "incentives. "
-             "([SF Chronicle, Feb 2026](https://www.sfchronicle.com/sf/article/downtown-office-conversions-21345575.php))")
-
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Completed Conversions", "0",
-                  delta="none as of Feb 2026")
-    with col2:
-        st.metric("In Pipeline (filed/issued)", f"{len(active_conv)}",
-                  delta=f"{active_conv['proposed_units'].sum():.0f} proposed units")
-    with col3:
-        est_units_at_threshold = 1_500_000 / 800
-        st.metric("1.5M Sq Ft Threshold",
-                  f"~{est_units_at_threshold:,.0f} units",
-                  delta="zero affordability add-on")
-    with col4:
-        st.metric("Max Tax Increment", "$1.22B",
-                  delta="over district lifetime")
-
     # ══════════════════════════════════════════════════════
-    # PART 2: BEHIND THE POLICY
+    # PART 3: WHO BENEFITS, WHO PAYS
     # ══════════════════════════════════════════════════════
 
     st.markdown("---")
-    st.markdown("## Part 2: Behind the Policy")
-    st.markdown("The DRD is framed as a solution to 'increase housing and decrease vacancy.' "
-                "But what's actually driving the economics? And who stands to benefit?")
-
-    st.markdown("---")
-
-    # ── The Market Signal ────────────────────
-    st.markdown("### The Market Signal: Why Conversions Make Financial Sense")
-    st.markdown("The gap between office and residential revenue tells the economic story "
-                "behind the DRD. When we account for the 37% of offices sitting empty, "
-                "residential use now generates more revenue per unit of space.")
-
-    px = range(len(price_df))
-    office_effective_monthly = price_df["effective_office_rent"] * 800 / 12
-    office_asking_monthly = price_df["office_rent_psf"] * 800 / 12
-    res_monthly = price_df["residential_1br_rent"]
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        # Effective rent comparison
-        fig, ax = plt.subplots(figsize=(7, 5))
-        ax.plot(px, office_effective_monthly, color=RED, linewidth=2.5, marker='o',
-                markersize=4, label='Office (effective)')
-        ax.plot(px, office_asking_monthly, color=RED, linewidth=1.5, linestyle=':',
-                alpha=0.5, label='Office (asking)')
-        ax.fill_between(px, office_effective_monthly, office_asking_monthly,
-                        color=RED, alpha=0.1, label='Lost to vacancy')
-        ax.plot(px, res_monthly, color=BLUE, linewidth=2.5, marker='s',
-                markersize=4, label='1BR Residential')
-        ax.axvline(28, color=GREEN, linewidth=1.5, linestyle='--', alpha=0.5)
-        ax.annotate("DRD\nLaunches", xy=(28, ax.get_ylim()[1] * 0.95),
-                    fontsize=8, color=GREEN, ha='center', fontweight='bold')
-        # Find and annotate crossover
-        for i in range(len(price_df)):
-            if res_monthly.iloc[i] > office_effective_monthly.iloc[i]:
-                ax.annotate("Residential\nsurpasses office",
-                            xy=(i, res_monthly.iloc[i]),
-                            xytext=(i - 4, res_monthly.iloc[i] + 600),
-                            fontsize=8, fontweight='bold', color=BLUE,
-                            arrowprops=dict(arrowstyle='->', color=BLUE, lw=1.5))
-                break
-        ax.set_ylabel("Monthly Revenue per 800 sqft Unit ($)")
-        ax.set_title("Effective Rent: Why Conversions Make Sense", fontweight="bold")
-        ax.set_xticks(range(0, len(price_df), 4))
-        ax.set_xticklabels(price_df["quarter"].values[::4], rotation=45, fontsize=8)
-        ax.legend(fontsize=8, loc='upper right')
-        ax.grid(True, alpha=0.3)
-        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f'${v:,.0f}'))
-        plt.tight_layout()
-        st.pyplot(fig)
-        plt.close()
-
-    with col2:
-        # Office vacancy over time
-        fig, ax = plt.subplots(figsize=(7, 5))
-        ax.fill_between(px, price_df["office_vacancy_pct"], color=RED, alpha=0.3)
-        ax.plot(px, price_df["office_vacancy_pct"], color=RED, linewidth=2.5,
-                marker='o', markersize=4)
-        ax.axhline(4.7, color=GREEN, linewidth=1.5, linestyle=':', alpha=0.7)
-        ax.text(1, 3.0, "Pre-pandemic low: 4.7%", fontsize=8, color=GREEN, fontweight='bold')
-        ax.axvline(28, color=GREEN, linewidth=1.5, linestyle='--', alpha=0.5)
-        ax.annotate("DRD\nLaunches", xy=(28, 5), fontsize=8, color=GREEN,
-                    ha='center', fontweight='bold')
-        ax.set_ylabel("Vacancy Rate (%)")
-        ax.set_title("1 in 3 Downtown Offices Sit Empty", fontweight="bold")
-        ax.set_xticks(range(0, len(price_df), 4))
-        ax.set_xticklabels(price_df["quarter"].values[::4], rotation=45, fontsize=8)
-        ax.set_ylim(0, 42)
-        ax.grid(True, alpha=0.3)
-        plt.tight_layout()
-        st.pyplot(fig)
-        plt.close()
-
-    latest = price_df.iloc[-1]
-    eff_monthly = latest["effective_office_rent"] * 800 / 12
-    res_rent = latest["residential_1br_rent"]
-    premium = res_rent - eff_monthly
-    asking_monthly = latest["office_rent_psf"] * 800 / 12
-    vacancy = latest["office_vacancy_pct"]
     st.markdown(
-        "**The crossover happened in Q4 2022.** Effective office revenue per 800 sqft unit "
-        "is now **\\${:,.0f}/mo** vs **\\${:,.0f}/mo** for a 1BR apartment "
-        "-- a **\\${:,.0f}/mo residential premium**. The pink shaded area represents "
-        "revenue lost to vacancy: offices *could* charge \\${:,.0f}/mo, but with "
-        "{:.1f}% vacancy, a third of that revenue doesn't exist.".format(
-            eff_monthly, res_rent, premium, asking_monthly, vacancy
-        )
+        f'<div style="display:inline-block; padding: 4px 12px; '
+        f'background-color: {PURPLE}15; color: {PURPLE}; '
+        f'border-radius: 20px; font-size: 0.8em; font-weight: 700; '
+        f'letter-spacing: 1px; margin-bottom: 6px;">WHO BENEFITS, WHO PAYS</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown("## The Affordability Gap")
+    st.markdown(
+        "**Who is this housing actually for** &mdash; and what does the "
+        "city give up to deliver it?"
     )
 
-    st.caption("Sources: CBRE, JLL, Cushman & Wakefield market reports; Zumper/Zillow "
-               "residential rent data; SF.gov vacancy data. Some quarterly values interpolated.")
-
-    st.markdown("---")
-
-    # ── Who Actually Benefits? ───────────────
-    st.markdown("### Who Actually Benefits?")
-
+    # Side-by-side comparison: Required income | Gap | Median income
     st.markdown(
-        "SF lost **~66,000 residents** during COVID, yet rents have fully recovered and "
-        "surpassed 2019 peaks. Fewer people, higher prices — the housing crisis is driven "
-        "by **income competition**, not population growth."
+        f'<div style="display:flex;align-items:stretch;gap:0;margin-top:18px;'
+        f'border-radius:12px;overflow:hidden;'
+        f'box-shadow:0 1px 3px rgba(15,23,42,0.10),0 1px 2px rgba(15,23,42,0.05);">'
+        f'<div style="flex:1;background:white;border-top:5px solid {PURPLE};'
+        f'padding:22px 26px;">'
+        f'<div style="font-size:0.72em;color:{PURPLE};font-weight:800;'
+        f'letter-spacing:1.5px;">REQUIRED INCOME</div>'
+        f'<div style="font-size:2.6em;font-weight:800;color:{SLATE_900};'
+        f'line-height:1.0;margin:8px 0 6px 0;">$146,600</div>'
+        f'<div style="font-size:0.85em;color:{SLATE_500};font-weight:600;'
+        f'line-height:1.4;">Per year, to afford $3,665/mo rent at the '
+        f'standard 30%-of-income rule</div></div>'
+        f'<div style="flex:0 0 auto;background:{SLATE_50};display:flex;'
+        f'flex-direction:column;justify-content:center;align-items:center;'
+        f'padding:18px 26px;border-left:1px solid {SLATE_200};'
+        f'border-right:1px solid {SLATE_200};">'
+        f'<div style="font-size:0.7em;color:{RED};font-weight:800;'
+        f'letter-spacing:1.5px;">GAP</div>'
+        f'<div style="font-size:1.5em;font-weight:800;color:{RED};'
+        f'line-height:1.1;margin-top:4px;">&minus;$6,799</div>'
+        f'<div style="font-size:0.72em;color:{SLATE_500};font-weight:600;'
+        f'text-transform:uppercase;letter-spacing:0.6px;margin-top:2px;">'
+        f'/yr short</div></div>'
+        f'<div style="flex:1;background:white;border-top:5px solid {RED};'
+        f'padding:22px 26px;">'
+        f'<div style="font-size:0.72em;color:{RED};font-weight:800;'
+        f'letter-spacing:1.5px;">SF MEDIAN HOUSEHOLD</div>'
+        f'<div style="font-size:2.6em;font-weight:800;color:{SLATE_900};'
+        f'line-height:1.0;margin:8px 0 6px 0;">$139,801</div>'
+        f'<div style="font-size:0.85em;color:{SLATE_500};font-weight:600;'
+        f'line-height:1.4;">Annual income, US Census ACS '
+        f'(2019&ndash;2023 5-year estimates)</div></div>'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Median SF Rent", "$3,665/mo", "requires $146,600/yr income")
-    with col2:
-        st.metric("Median Household Income", "$139,801/yr", "-$6,799/yr gap")
-    with col3:
-        st.metric("DRD Tier 1 Housing", "100% market-rate", "zero affordability requirements")
-
+    # Punchline callout
     st.markdown(
-        "The first 1,875 units (1.5M sq ft) will have **no affordable housing requirements** "
-        "— serving households earning $140K+. Meanwhile, 80% of the city's 66,000 extremely "
-        "low-income households already spend more than a third of their income on rent."
+        f'<div style="margin-top:18px;padding:18px 22px;'
+        f'background:linear-gradient(135deg,{PURPLE}10 0%,white 100%);'
+        f'border-left:5px solid {PURPLE};border-radius:8px;">'
+        f'<div style="font-size:0.78em;color:{PURPLE};font-weight:700;'
+        f'letter-spacing:1.5px;margin-bottom:6px;">PUNCHLINE</div>'
+        f'<div style="font-size:1.05em;color:{SLATE_900};line-height:1.55;">'
+        f'<b>SF&apos;s median household can&apos;t afford the median DRD '
+        f'unit.</b> The first 1,875 units &mdash; with no affordability '
+        f'requirements &mdash; will serve households earning above the '
+        f'city&apos;s middle. The renters priced out today are not the '
+        f'ones this policy is built for.</div></div>',
+        unsafe_allow_html=True,
     )
-    st.caption("Sources: Census ACS population estimates; Zumper median rent data.")
 
-    st.markdown("---")
+    st.caption(
+        "Sources: $3,665 SF median rent (Zumper, 2024&ndash;25). "
+        "$139,801 SF median household income (US Census ACS 2019&ndash;2023, "
+        "5-year estimates). $146,600 derived from rent at the standard "
+        "30%-of-income housing affordability rule."
+    )
 
-    # ── Putting It Together ──────────────────
-    st.markdown("### What's Really Driving This?")
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown(
-            "**The official narrative:** Empty offices hurt the tax base and downtown vitality. "
-            "Converting them to housing solves two problems at once -- reducing vacancy and "
-            "addressing the housing shortage."
-        )
-    with col2:
-        st.markdown(
-            "**What the data shows:** Rents are rising despite population decline. The first "
-            "1,875 units will be 100% market-rate. The median household already can't afford "
-            "median rent. The primary beneficiaries are property owners (who get tax breaks) "
-            "and high-income renters (who get new units)."
-        )
-    with col3:
-        st.markdown(
-            "**The unanswered question:** Does the DRD represent genuine housing policy, or "
-            "is it a property tax subsidy dressed as a housing program? The $1.22B in diverted "
-            "tax revenue could alternatively fund affordable housing, transit, or direct rent "
-            "subsidies for the residents who need it most."
-        )
+    next_tab_arrow("Why is this important?", SLATE_500)
 
 
 # ══════════════════════════════════════════════
@@ -761,81 +1389,210 @@ with tab2:
 
 with tab1:
     st.subheader("Downtown Hospitality Safety Task Force (Feb 2025)")
-    st.markdown("In February 2025, Mayor Lurie launched a dedicated police task force "
-                "covering Union Square, Moscone Center, and Yerba Buena Gardens -- "
-                "officers deployed 20 hours a day, 365 days a year. "
-                "Crime went down. Officials celebrated. But that's not the whole story.")
+    st.markdown(
+        "A police unit created to make downtown feel safer for visitors and "
+        "conventions. Officers patrol Union Square, Moscone, and Yerba Buena "
+        "Gardens **20 hours a day, 365 days a year**."
+    )
 
-    # ── PART 1: THE PROMISE ─────────────────
-    st.markdown("### Part 1: The Promise -- Crime Goes Down Downtown")
-
+    # Pre-compute key numbers for hero stats
     hosp_zone = hosp_monthly[hosp_monthly["zone"] == "Hospitality Zone"].copy()
     rest_sf = hosp_monthly[hosp_monthly["zone"] == "Rest of SF"].copy()
+    months = hosp_zone["year_month"].values
+    feb_idx = list(months).index("2025-02") if "2025-02" in months else None
+    pre = hosp_zone.iloc[:feb_idx]
+    post = hosp_zone.iloc[feb_idx:]
+    pre_avg = pre["total_crimes"].mean()
+    post_avg = post["total_crimes"].mean()
+    pct_change = ((post_avg - pre_avg) / pre_avg) * 100
 
-    col1, col2 = st.columns([2.5, 1])
+    # ── Executive summary: the full picture in 30 seconds ──
+    st.markdown(
+        '<div style="font-size: 0.78em; color: ' + SLATE_500 + '; '
+        'font-weight: 700; letter-spacing: 1.5px; margin: 8px 0 12px 0;">'
+        'THE FULL PICTURE &mdash; SCROLL FOR DETAILS'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    hcol1, hcol2, hcol3 = st.columns(3)
+    with hcol1:
+        st.markdown(summary_card(
+            "THE PROMISE",
+            f"{pct_change:+.0f}%",
+            "Crime in the Hospitality Zone",
+            "Officials launched the task force in <b>Feb 2025</b> and "
+            "made the downtown crime drop the centerpiece of SF's recovery "
+            "narrative. Crime really did fall.",
+            GREEN,
+        ), unsafe_allow_html=True)
+    with hcol2:
+        st.markdown(summary_card(
+            "THE DATA",
+            "Part 1 only",
+            "What &quot;crime is down&quot; actually measures",
+            "&quot;Crime is down&quot; refers only to <b>Part 1 crimes</b> "
+            "&mdash; homicide, robbery, larceny. It doesn't include drug "
+            "offenses, disorderly conduct, or 911 calls &mdash; the "
+            "categories that surged in the Mission and SoMa after Feb 2025. "
+            "The crime didn't disappear; it just <b>hid in the categories "
+            "and neighborhoods the official narrative chose to overlook</b>.",
+            RED,
+        ), unsafe_allow_html=True)
+    with hcol3:
+        st.markdown(summary_card(
+            "WHO BENEFITS / WHO PAYS",
+            "2 of 9",
+            "Statements acknowledge displacement",
+            "Visitors and voters see a safer downtown. Lower-income "
+            "residents in adjacent neighborhoods absorb the cost &mdash; "
+            "a gap officials rarely talk about publicly.",
+            PURPLE,
+        ), unsafe_allow_html=True)
+
+    st.markdown("")
+    st.markdown("---")
+
+    # ══════════════════════════════════════════════
+    # PART 1: THE PROMISE
+    # ══════════════════════════════════════════════
+    st.markdown(
+        f'<div style="display:inline-block; padding: 4px 12px; '
+        f'background-color: {GREEN}15; color: {GREEN}; '
+        f'border-radius: 20px; font-size: 0.8em; font-weight: 700; '
+        f'letter-spacing: 1px; margin-bottom: 6px;">THE PROMISE</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown("### Crime Goes Down in the Hospitality Zone")
+    st.markdown(
+        '<div style="color: ' + SLATE_500 + '; font-size: 1.0em; '
+        'margin-bottom: 14px;">'
+        "The task force's success, as officials measure it."
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    col1, col2 = st.columns([1.7, 1])
 
     with col1:
-        fig, ax = plt.subplots(figsize=(10, 4.5))
-        ax.plot(range(len(hosp_zone)), hosp_zone["total_crimes"].values,
-                color=RED, marker="o", linewidth=2.5, markersize=7,
-                label="Hospitality Zone")
-        ax.plot(range(len(rest_sf)), rest_sf["total_crimes"].values,
-                color=BLUE, marker="s", linewidth=2.5, markersize=7,
-                label="Rest of SF")
+        # Part 1 series (Property + Violent) — what officials cite
+        part1_series = (hosp_zone["Property"].values
+                        + hosp_zone["Violent"].values)
 
-        months = hosp_zone["year_month"].values
-        feb_idx = list(months).index("2025-02") if "2025-02" in months else None
+        part1_pre_avg = part1_series[:feb_idx].mean()
+        part1_post_avg = part1_series[feb_idx:].mean()
+        part1_change = ((part1_post_avg - part1_pre_avg) / part1_pre_avg) * 100
+
+        fig, ax = plt.subplots(figsize=(8, 4.5))
+
+        # Shaded pre/post regions
         if feb_idx is not None:
-            ax.axvline(feb_idx, color="#6B7280", linewidth=2, linestyle="--", alpha=0.7)
-            ax.annotate("Task Force (Feb 2025)",
-                        xy=(feb_idx, ax.get_ylim()[1] * 0.95),
-                        fontsize=10, ha="center", color="#6B7280", fontweight="bold")
+            ax.axvspan(-0.5, feb_idx, color=SLATE_200, alpha=0.25, zorder=0)
+            ax.axvspan(feb_idx, len(months) - 0.5, color=GREEN,
+                       alpha=0.07, zorder=0)
 
-        ax.set_xticks(range(len(months)))
-        ax.set_xticklabels([m[2:] for m in months], rotation=45, ha="right", fontsize=9)
-        ax.set_ylabel("Total Crimes")
-        ax.set_title("Monthly Crime: Hospitality Zone vs Rest of SF", fontweight="bold")
-        ax.legend(frameon=True)
+        # Part 1 only — the categories officials cite
+        ax.plot(range(len(hosp_zone)), part1_series,
+                color=RED, marker="o", linewidth=2.8, markersize=6,
+                zorder=4)
+
+        # Vertical Feb 2025 marker
+        if feb_idx is not None:
+            ax.axvline(feb_idx, color=SLATE_700, linewidth=1.5,
+                       linestyle="--", alpha=0.6)
+            ax.text(feb_idx + 0.15, ax.get_ylim()[1] * 0.96,
+                    "Task Force\nlaunches",
+                    fontsize=9, ha="left", va="top",
+                    color=SLATE_700, fontweight="bold",
+                    bbox=dict(boxstyle="round,pad=0.35",
+                              facecolor="white", edgecolor="none",
+                              alpha=0.95))
+
+        ax.set_xticks(range(0, len(months), 3))
+        ax.set_xticklabels([months[i][2:] for i in range(0, len(months), 3)],
+                           rotation=0, ha="center", fontsize=9)
+        style_axes(ax, ylabel="Part 1 crimes in the Hospitality Zone / month")
         plt.tight_layout()
         st.pyplot(fig)
         plt.close()
 
     with col2:
         if feb_idx is not None:
-            pre = hosp_zone.iloc[:feb_idx]
-            post = hosp_zone.iloc[feb_idx:]
-            pre_avg = pre["total_crimes"].mean()
-            post_avg = post["total_crimes"].mean()
-            pct_change = ((post_avg - pre_avg) / pre_avg) * 100
+            st.markdown(
+                '<div style="font-size: 0.78em; color: ' + SLATE_500 + '; '
+                'font-weight: 700; letter-spacing: 1.2px; '
+                'margin: 6px 0 12px 0;">'
+                'CHANGE SINCE TASK FORCE'
+                '</div>',
+                unsafe_allow_html=True,
+            )
 
-            st.metric("Pre-Task Force Avg", f"{pre_avg:,.0f}/mo")
-            st.metric("Post-Task Force Avg", f"{post_avg:,.0f}/mo",
-                      delta=f"{pct_change:+.1f}%")
+            pre_part1 = (pre["Property"] + pre["Violent"]).mean()
+            post_part1 = (post["Property"] + post["Violent"]).mean()
+            part1_change_metric = ((post_part1 - pre_part1) / pre_part1) * 100
 
-            pre_prop = pre["Property"].mean()
-            post_prop = post["Property"].mean()
-            prop_change = ((post_prop - pre_prop) / pre_prop) * 100
-            st.metric("Property Crime", f"{post_prop:,.0f}/mo",
-                      delta=f"{prop_change:+.1f}% vs pre")
+            accent = GREEN if part1_change_metric < 0 else RED
+            st.markdown(
+                f"""
+                <div style="
+                    margin-bottom: 10px;
+                    padding: 22px 22px;
+                    background: white;
+                    border-left: 4px solid {accent};
+                    border-radius: 6px;
+                    box-shadow: 0 1px 2px rgba(15,23,42,0.05);
+                ">
+                    <div style="font-size: 0.78em; color: {SLATE_500};
+                                font-weight: 600; letter-spacing: 0.5px;
+                                text-transform: uppercase; margin-bottom: 6px;">
+                        Part 1 Crime
+                    </div>
+                    <div style="font-size: 2.8em; font-weight: 800;
+                                color: {accent}; line-height: 1.0;">
+                        {part1_change_metric:+.1f}%
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-            pre_viol = pre["Violent"].mean()
-            post_viol = post["Violent"].mean()
-            viol_change = ((post_viol - pre_viol) / pre_viol) * 100
-            st.metric("Violent Crime", f"{post_viol:,.0f}/mo",
-                      delta=f"{viol_change:+.1f}% vs pre")
+            st.caption(
+                "This is exactly what officials reference when they say "
+                "crime is down. **Part 1 (Index) crimes** include: "
+                "homicide, rape, robbery, aggravated assault, burglary, "
+                "larceny-theft, motor vehicle theft, and arson."
+            )
 
-    # ── Officials celebrate ───
-    st.markdown("---")
-    st.markdown("#### The Official Response")
-
+    # ── Officials celebrate (now in expander) ───
     statements = pd.read_csv("data/official_statements.csv")
     celebrate = statements[statements["mentions_displacement"] == "No"]
 
-    for _, row in celebrate.iterrows():
-        st.markdown(
-            f"> \"{row['quote']}\"  \n"
-            f"> -- **{row['speaker']}**, {row['event']} ({row['date']}) | *{row['source']}*"
-        )
+    with st.expander(
+        f"&#128172;&nbsp; Read what officials said &mdash; "
+        f"{len(celebrate)} public statements celebrating the policy",
+        expanded=False,
+    ):
+        for _, row in celebrate.iterrows():
+            source_link = (f"[{row['source']}]({row['url']})"
+                           if row.get('url') and pd.notna(row.get('url'))
+                           else f"*{row['source']}*")
+            st.markdown(
+                f"> \"{row['quote']}\"  \n"
+                f"> -- **{row['speaker']}**, {row['event']} ({row['date']}) "
+                f"| {source_link}"
+            )
+
+    st.markdown(
+        takeaway_box(
+            "TAKEAWAY",
+            f"Crime in the Hospitality Zone fell <b>{pct_change:+.0f}%</b> "
+            f"after the task force launched. Officials made it a centerpiece "
+            f"narrative. <b>If you stop here, the policy looks like a clear "
+            f"success.</b>",
+            color=GREEN,
+        ),
+        unsafe_allow_html=True,
+    )
 
     st.markdown("---")
 
@@ -843,231 +1600,403 @@ with tab1:
     # PART 2: BUT THAT'S NOT THE WHOLE STORY
     # ══════════════════════════════════════════════
 
-    st.markdown("### Part 2: But That's Not the Whole Story")
-    st.markdown("Crime didn't disappear -- it moved. The neighborhoods surrounding "
-                "the hospitality zone absorbed what downtown pushed out.")
+    st.markdown(
+        f'<div style="display:inline-block; padding: 4px 12px; '
+        f'background-color: {RED}15; color: {RED}; '
+        f'border-radius: 20px; font-size: 0.8em; font-weight: 700; '
+        f'letter-spacing: 1px; margin-bottom: 6px;">THE FULL STORY</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown("### Crime Didn't Disappear &mdash; It Moved")
+    st.markdown(
+        '<div style="color: ' + SLATE_500 + '; font-size: 1.0em; '
+        'margin-bottom: 14px;">'
+        "The neighborhoods surrounding the Hospitality Zone absorbed what "
+        "downtown pushed out."
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
     disp = pd.read_csv("data/displacement_crime.csv")
-
-    # ── Side-by-side: total crimes + drug offenses ───
-    col1, col2 = st.columns(2)
 
     months_d = disp[disp["zone"] == "Hospitality Zone"]["year_month"].values
     feb_idx_d = list(months_d).index("2025-02") if "2025-02" in months_d else None
 
-    with col1:
+    # ── Toggle: Mission | SoMa ──
+    zone_choice = st.radio(
+        "Select neighborhood:",
+        ["Mission District", "SoMa (Southern)"],
+        horizontal=True,
+        key="part2_zone_toggle",
+        label_visibility="collapsed",
+    )
+    zone_label_short = "Mission" if zone_choice == "Mission District" else "SoMa"
+
+    st.markdown(
+        f'<div style="font-size: 0.85em; color: {SLATE_500}; '
+        f'margin: -8px 0 16px 0;">Showing crime data for the '
+        f'<b>{zone_label_short}</b>. Toggle above to switch.</div>',
+        unsafe_allow_html=True,
+    )
+
+    # Filter to the selected zone
+    z = disp[disp["zone"] == zone_choice].copy().reset_index(drop=True)
+
+    def _render_zone_chart(values, ylabel):
         fig, ax = plt.subplots(figsize=(8, 4.5))
-        for zone, color, marker in [("Hospitality Zone", GREEN, "o"),
-                                     ("Mission District", RED, "s"),
-                                     ("SoMa (Southern)", AMBER, "^")]:
-            zd = disp[disp["zone"] == zone]
-            ax.plot(range(len(zd)), zd["total_crimes"].values,
-                    color=color, marker=marker, linewidth=2, markersize=5,
-                    label=zone, alpha=0.9)
         if feb_idx_d is not None:
-            ax.axvline(feb_idx_d, color="#6B7280", linewidth=2, linestyle="--", alpha=0.7)
-            ax.annotate("Task Force\n(Feb 2025)",
-                        xy=(feb_idx_d, ax.get_ylim()[1] * 0.92),
-                        fontsize=9, ha="center", color="#6B7280", fontweight="bold")
+            ax.axvspan(-0.5, feb_idx_d, color=SLATE_200, alpha=0.25, zorder=0)
+            ax.axvspan(feb_idx_d, len(months_d) - 0.5, color=RED,
+                       alpha=0.07, zorder=0)
+        ax.plot(range(len(z)), values,
+                color=RED, marker="o", linewidth=2.8, markersize=6,
+                zorder=4)
+        if feb_idx_d is not None:
+            ax.axvline(feb_idx_d, color=SLATE_700, linewidth=1.5,
+                       linestyle="--", alpha=0.6)
+            y_min, y_max = ax.get_ylim()
+            ax.text(feb_idx_d + 0.15, y_min + (y_max - y_min) * 0.08,
+                    "Task Force\nlaunches",
+                    fontsize=9, ha="left", va="bottom",
+                    color=SLATE_700, fontweight="bold",
+                    bbox=dict(boxstyle="round,pad=0.35",
+                              facecolor="white", edgecolor="none",
+                              alpha=0.95))
         ax.set_xticks(range(0, len(months_d), 3))
         ax.set_xticklabels([months_d[i][2:] for i in range(0, len(months_d), 3)],
-                           rotation=45, ha="right", fontsize=9)
-        ax.set_ylabel("Total Crimes")
-        ax.set_title("Total Crime: Downtown vs Surrounding Areas", fontweight="bold")
-        ax.legend(frameon=True, fontsize=8)
+                           rotation=0, ha="center", fontsize=9)
+        style_axes(ax, ylabel=ylabel)
         plt.tight_layout()
         st.pyplot(fig)
         plt.close()
 
-    with col2:
-        fig, ax = plt.subplots(figsize=(8, 4.5))
-        for zone, color, marker in [("Hospitality Zone", GREEN, "o"),
-                                     ("Mission District", RED, "s"),
-                                     ("SoMa (Southern)", AMBER, "^")]:
-            zd = disp[disp["zone"] == zone]
-            ax.plot(range(len(zd)), zd["drug_offenses"].values,
-                    color=color, marker=marker, linewidth=2, markersize=5,
-                    label=zone, alpha=0.9)
-        if feb_idx_d is not None:
-            ax.axvline(feb_idx_d, color="#6B7280", linewidth=2, linestyle="--", alpha=0.7)
-            ax.annotate("Task Force\n(Feb 2025)",
-                        xy=(feb_idx_d, ax.get_ylim()[1] * 0.92),
-                        fontsize=9, ha="center", color="#6B7280", fontweight="bold")
-        ax.set_xticks(range(0, len(months_d), 3))
-        ax.set_xticklabels([months_d[i][2:] for i in range(0, len(months_d), 3)],
-                           rotation=45, ha="right", fontsize=9)
-        ax.set_ylabel("Drug Offenses")
-        ax.set_title("Drug Offenses: The Displacement Effect", fontweight="bold")
-        ax.legend(frameon=True, fontsize=8)
-        plt.tight_layout()
-        st.pyplot(fig)
-        plt.close()
+    # ── Two charts side-by-side: Total Crime + Drug Offenses ──
+    chart_col1, chart_col2 = st.columns(2)
 
-    # ── Displacement metrics ───
-    col1, col2, col3, col4 = st.columns(4)
-
-    mission_pre = disp[(disp["zone"] == "Mission District") & (disp["year_month"] < "2025-02")]
-    mission_post = disp[(disp["zone"] == "Mission District") & (disp["year_month"] >= "2025-02")]
-
-    with col1:
-        pre_drug = mission_pre["drug_offenses"].mean()
-        post_drug = mission_post["drug_offenses"].mean()
-        drug_pct = ((post_drug - pre_drug) / pre_drug) * 100
-        st.metric("Mission Drug Offenses",
-                  f"{post_drug:.0f}/mo",
-                  delta=f"{drug_pct:+.0f}% vs pre",
-                  delta_color="inverse")
-    with col2:
-        pre_dc = mission_pre["dispatch_calls"].mean()
-        post_dc = mission_post["dispatch_calls"].mean()
-        dc_pct = ((post_dc - pre_dc) / pre_dc) * 100
-        st.metric("Mission 911 Calls",
-                  f"{post_dc:.0f}/mo",
-                  delta=f"{dc_pct:+.0f}% vs pre",
-                  delta_color="inverse")
-    with col3:
-        st.metric("16th & Mission Drug Share",
-                  "27% of citywide",
-                  delta="was 5% pre-task force",
-                  delta_color="inverse")
-    with col4:
-        st.metric("311 Complaints (Mission)",
-                  "10-year high",
-                  delta="Jan-Feb 2025",
-                  delta_color="inverse")
-
-    st.caption("Drug offenses and disorderly conduct are NOT Part 1 crimes -- they are "
-               "excluded from the official SFPD dashboards cited in press conferences. "
-               "Sources: Mission Local, SF Standard, GrowSF, SFPD DMACC data.")
-
-    st.markdown("---")
-
-    # ── The one time they acknowledged it ───
-    st.markdown("#### Did Officials Acknowledge This?")
-
-    col1, col2 = st.columns([1.3, 1])
-
-    with col1:
-        yes_count = (statements["mentions_displacement"] == "Yes").sum()
-        no_count = (statements["mentions_displacement"] == "No").sum()
-
-        fig, ax = plt.subplots(figsize=(6, 3))
-        bars = ax.barh(["Acknowledges\nDisplacement", "No Mention"],
-                       [yes_count, no_count],
-                       color=[GREEN, RED], alpha=0.85, height=0.5)
-        for bar, val in zip(bars, [yes_count, no_count]):
-            ax.text(bar.get_width() + 0.15, bar.get_y() + bar.get_height() / 2,
-                    f"{val}", va="center", fontsize=13, fontweight="bold")
-        ax.set_xlabel("Number of Public Statements")
-        ax.set_title("9 Major Statements Tracked: How Many Mention Displacement?",
-                     fontweight="bold")
-        ax.set_xlim(0, no_count + 2)
-        plt.tight_layout()
-        st.pyplot(fig)
-        plt.close()
-
-    with col2:
-        acknowledge = statements[statements["mentions_displacement"] == "Yes"]
-        st.markdown("**The only times displacement was acknowledged:**")
-        for _, row in acknowledge.iterrows():
-            st.markdown(
-                f"> \"{row['quote']}\"  \n"
-                f"> -- **{row['speaker']}**, {row['event']} ({row['date']})"
-            )
-        st.markdown("")
+    with chart_col1:
         st.markdown(
-            "*Both acknowledgments came only when officials were directly pressed "
-            "by journalists or at a Board of Supervisors hearing -- never in proactive "
-            "communications.*"
+            f'<div style="font-size: 0.85em; color: {SLATE_500}; '
+            f'font-weight: 600; text-transform: uppercase; '
+            f'letter-spacing: 0.5px; margin-bottom: 4px;">Total Crime &mdash; '
+            f'{zone_label_short}</div>',
+            unsafe_allow_html=True,
+        )
+        _render_zone_chart(z["total_crimes"].values,
+                           f"Total crimes / month")
+
+    with chart_col2:
+        st.markdown(
+            f'<div style="font-size: 0.85em; color: {SLATE_500}; '
+            f'font-weight: 600; text-transform: uppercase; '
+            f'letter-spacing: 0.5px; margin-bottom: 4px;">Drug Offenses &mdash; '
+            f'{zone_label_short}</div>',
+            unsafe_allow_html=True,
+        )
+        _render_zone_chart(z["drug_offenses"].values,
+                           f"Drug offenses / month")
+
+    # ── Percent-change cards (mirroring Part 1's pattern) ──
+    pre = z[z["year_month"] < "2025-02"]
+    post = z[z["year_month"] >= "2025-02"]
+
+    def _pct_change(series_pre, series_post):
+        a, b = series_pre.mean(), series_post.mean()
+        return ((b - a) / a) * 100 if a > 0 else 0
+
+    total_chg = _pct_change(pre["total_crimes"], post["total_crimes"])
+    drug_chg = _pct_change(pre["drug_offenses"], post["drug_offenses"])
+    dispatch_chg = _pct_change(pre["dispatch_calls"], post["dispatch_calls"])
+
+    st.markdown(
+        f'<div style="font-size: 0.78em; color: {SLATE_500}; '
+        f'font-weight: 700; letter-spacing: 1.2px; margin: 18px 0 12px 0;">'
+        f'CHANGE IN {zone_label_short.upper()} SINCE TASK FORCE'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+    def _zone_pct_card(label, pct):
+        accent = RED if pct > 0 else GREEN
+        return f"""
+        <div style="
+            padding: 22px 22px;
+            background: white;
+            border-left: 4px solid {accent};
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(15,23,42,0.05);
+            height: 100%;
+        ">
+            <div style="font-size: 0.78em; color: {SLATE_500};
+                        font-weight: 600; letter-spacing: 0.5px;
+                        text-transform: uppercase; margin-bottom: 6px;">
+                {label}
+            </div>
+            <div style="font-size: 2.8em; font-weight: 800;
+                        color: {accent}; line-height: 1.0;">
+                {pct:+.1f}%
+            </div>
+        </div>
+        """
+
+    pcol1, pcol2, pcol3 = st.columns(3)
+    with pcol1:
+        st.markdown(_zone_pct_card("Total Crime", total_chg),
+                    unsafe_allow_html=True)
+    with pcol2:
+        st.markdown(_zone_pct_card("Drug Offenses", drug_chg),
+                    unsafe_allow_html=True)
+    with pcol3:
+        st.markdown(_zone_pct_card("911 Dispatch Calls", dispatch_chg),
+                    unsafe_allow_html=True)
+
+    st.markdown(
+        f'<div style="font-size: 0.9rem; color: {SLATE_700}; '
+        f'line-height: 1.5; margin-top: 14px;">'
+        f'<b>Drug offenses and disorderly conduct are not Part 1 crimes</b> '
+        f'&mdash; they are excluded from the official SFPD dashboards cited '
+        f'in press conferences. '
+        f'<span style="color: {SLATE_500};">Sources: Mission Local, '
+        f'SF Standard, GrowSF, SFPD DMACC data.</span>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+    # ── Standout (left) + Takeaway (right), side-by-side ──
+    yes_count = (statements["mentions_displacement"] == "Yes").sum()
+    total_statements = len(statements)
+
+    side_left, side_right = st.columns(2)
+
+    with side_left:
+        st.markdown(
+            f"""
+            <div style="
+                margin: 18px 0 8px 0;
+                padding: 22px 24px;
+                background-color: {SLATE_50};
+                border-left: 5px solid {SLATE_700};
+                border-radius: 10px;
+                height: 100%;
+            ">
+                <div style="
+                    font-size: 2.2em;
+                    font-weight: 800;
+                    color: {SLATE_900};
+                    line-height: 1.0;
+                    margin-bottom: 10px;
+                ">
+                    {yes_count} of {total_statements}
+                </div>
+                <div style="
+                    font-size: 0.98em;
+                    color: {SLATE_900};
+                    line-height: 1.5;
+                ">
+                    public statements about the task force acknowledge
+                    this displacement. <b>Both came reactively</b>, after
+                    journalists or supervisors pressed &mdash; never in
+                    proactive press releases, the State of the City, or
+                    social media.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with side_right:
+        st.markdown(
+            f"""
+            <div style="
+                margin: 18px 0 8px 0;
+                padding: 22px 24px;
+                background-color: {RED}10;
+                border-left: 5px solid {RED};
+                border-radius: 10px;
+                height: 100%;
+            ">
+                <div style="
+                    font-size: 0.78em;
+                    color: {RED};
+                    font-weight: 700;
+                    letter-spacing: 1.2px;
+                    margin-bottom: 10px;
+                ">
+                    TAKEAWAY
+                </div>
+                <div style="
+                    font-size: 0.98em;
+                    color: {SLATE_900};
+                    line-height: 1.55;
+                ">
+                    Crime didn't just <i>stop</i> after Feb 2025 &mdash; it
+                    <b>relocated</b>. The Mission and SoMa absorbed what
+                    downtown pushed out, in categories (drug offenses,
+                    dispatch calls) that officials don't include when they
+                    cite citywide crime drops.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
     st.markdown("---")
 
     # ══════════════════════════════════════════════
-    # PUBLIC SENTIMENT: WHAT RESIDENTS ARE SAYING
+    # THE NARRATIVE GAP — RESIDENT VOICES
     # ══════════════════════════════════════════════
 
-    st.markdown("### Public Sentiment: What Residents in SoMa and the Mission Are Saying")
-    st.markdown("Officials celebrate downtown wins. These are the voices of residents "
-                "living in the neighborhoods absorbing the displacement -- parents, "
-                "longtime residents, youth, and community organizers. "
-                "Quotes are drawn from Mission Local, SF Standard, ABC7, NBC Bay Area, "
-                "Axios SF, and community meetings (2025-2026).")
+    st.markdown(
+        f'<div style="display:inline-block; padding: 4px 12px; '
+        f'background-color: {PURPLE}15; color: {PURPLE}; '
+        f'border-radius: 20px; font-size: 0.8em; font-weight: 700; '
+        f'letter-spacing: 1px; margin-bottom: 6px;">THE NARRATIVE GAP</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown("### How residents describe the streets they live on")
+    st.markdown(
+        '<div style="color: ' + SLATE_500 + '; font-size: 1.0em; '
+        'margin-bottom: 18px;">'
+        "While the official narrative stays silent, the people in the "
+        "neighborhoods absorbing the spillover have been telling a different "
+        "story all along."
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
     sentiment = pd.read_csv("data/resident_sentiment.csv")
 
-    # ── Summary metrics ──
-    col1, col2, col3 = st.columns(3)
-    neg = (sentiment["sentiment"] == "Negative").sum()
-    mix = (sentiment["sentiment"] == "Mixed").sum()
-    pos = (sentiment["sentiment"] == "Positive").sum()
-    total = len(sentiment)
+    # Curated resident quotes — parent, longtime resident, advocate, youth
+    curated_speakers = [
+        ("Andrew Wickens",
+         "We've got kids on this block. You come home from school, "
+         "and people are passed out on our porch."),
+        ("Unnamed resident",
+         "Stop using this neighborhood as a containment zone."),
+        ("Reese Isbell",
+         "These neighborhoods have basically been put together as "
+         "containment zones for the city's problems."),
+        ("Ziggy Brown",
+         "I grew up with people on the streets all day 24/7"),
+    ]
 
-    with col1:
-        st.metric("Negative sentiment", f"{neg}/{total}",
-                  f"{neg / total * 100:.0f}% of quotes")
-    with col2:
-        st.metric("Mixed sentiment", f"{mix}/{total}",
-                  f"{mix / total * 100:.0f}% of quotes")
-    with col3:
-        st.metric("Positive sentiment", f"{pos}/{total}",
-                  f"{pos / total * 100:.0f}% of quotes")
+    def find_quote(speaker, partial_quote):
+        match = sentiment[
+            (sentiment["speaker"] == speaker)
+            & sentiment["quote"].str.contains(partial_quote[:25],
+                                               regex=False, na=False)
+        ]
+        if len(match) > 0:
+            return match.iloc[0]
+        return None
 
-    st.markdown("")
+    # Two-column layout for the four curated quotes
+    quote_cols = st.columns(2)
+    for i, (speaker, partial_q) in enumerate(curated_speakers):
+        q = find_quote(speaker, partial_q)
+        if q is None:
+            continue
+        with quote_cols[i % 2]:
+            st.markdown(
+                f"""
+                <div style="
+                    background: white;
+                    border-left: 3px solid {RED};
+                    padding: 14px 18px;
+                    margin-bottom: 14px;
+                    border-radius: 4px;
+                    box-shadow: 0 1px 2px rgba(15,23,42,0.05);
+                ">
+                    <div style="font-style: italic; color: {SLATE_900};
+                                font-size: 0.98em; line-height: 1.5;
+                                margin-bottom: 10px;">
+                        &ldquo;{q['quote']}&rdquo;
+                    </div>
+                    <div style="font-size: 0.83em; color: {SLATE_500};">
+                        &mdash; <b>{q['speaker']}</b>, {q['identity']}
+                        &nbsp;&middot;&nbsp;
+                        <a href="{q['url']}" target="_blank"
+                           style="color: {SLATE_500};">{q['source']}</a>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-    # ── Pattern in Residents' Voices ──
-    st.markdown("#### The Pattern in Residents' Voices")
     st.markdown(
-        "**The disconnect:** While the mayor says *\"This city is safe\"* and cites "
-        "historic crime lows, residents in SoMa and the Mission describe their "
-        "neighborhoods as *\"a shit show every night,\"* *\"like a third world country,\"* "
-        "and *\"containment zones for the city's problems.\"* "
-        "The narrative gap between **official statements** and **resident experience** "
-        "is the story the numbers alone don't tell."
+        f'<div style="font-size: 0.85em; color: {SLATE_500}; '
+        f'font-style: italic; margin-top: 4px;">'
+        f'Drawn from Mission Local, SF Standard, ABC7, NBC Bay Area, '
+        f'and El Tecolote (2025-2026).'
+        f'</div>',
+        unsafe_allow_html=True,
     )
 
-    st.markdown("---")
+    # ── Closing statement ──
+    st.markdown(
+        f"""
+        <div style="
+            margin: 40px 0 16px 0;
+            padding: 32px 40px;
+            background: linear-gradient(135deg, {PURPLE}18 0%, white 100%);
+            border-left: 8px solid {PURPLE};
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08);
+        ">
+            <div style="font-size: 0.82em; color: {PURPLE};
+                        font-weight: 700; letter-spacing: 1.5px;
+                        margin-bottom: 14px;">
+                THE TAKEAWAY
+            </div>
+            <div style="font-size: 1.4em; line-height: 1.45;
+                        color: {SLATE_900}; font-weight: 500;">
+            When success is measured only in the categories officials choose
+            to count, and only in the neighborhoods they choose to celebrate,
+            the story they tell is true &mdash; <b>and incomplete</b>.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    # ── Filter and show quotes ──
-    st.markdown("#### Voices from the Neighborhood")
+    next_tab_arrow("Office-to-Residential & DRD", BLUE)
 
-    col_f1, col_f2 = st.columns(2)
-    with col_f1:
-        filter_nbhd = st.selectbox("Filter by neighborhood:",
-                                    ["All", "Mission", "SoMa"],
-                                    key="sentiment_nbhd")
-    with col_f2:
-        filter_topic = st.selectbox("Filter by topic:",
-                                     ["All", "Drugs", "Public Safety",
-                                      "Homelessness", "Policy"],
-                                     key="sentiment_topic")
 
-    filtered = sentiment.copy()
-    if filter_nbhd != "All":
-        filtered = filtered[filtered["neighborhood"] == filter_nbhd]
-    if filter_topic != "All":
-        filtered = filtered[filtered["topic"] == filter_topic]
+# ══════════════════════════════════════════════
+# TAB 3: PURPOSE
+# ══════════════════════════════════════════════
 
-    if len(filtered) == 0:
-        st.info("No quotes match the selected filters.")
-    else:
-        # Two-column layout for quotes
-        col1, col2 = st.columns(2)
-        cols = [col1, col2]
-        for i, (_, row) in enumerate(filtered.iterrows()):
-            with cols[i % 2]:
-                st.markdown(
-                    f"<div style='background-color: #F9FAFB; padding: 12px; "
-                    f"border-left: 4px solid "
-                    f"{RED if row['sentiment'] == 'Negative' else AMBER if row['sentiment'] == 'Mixed' else GREEN}; "
-                    f"margin-bottom: 12px; border-radius: 4px;'>"
-                    f"<div style='font-style: italic; color: #1F2937; margin-bottom: 8px;'>"
-                    f"\"{row['quote']}\"</div>"
-                    f"<div style='font-size: 0.85em; color: #6B7280;'>"
-                    f"— <b>{row['speaker']}</b> ({row['identity']})<br>"
-                    f"<span style='color: #9CA3AF;'>{row['neighborhood']} · {row['topic']} · "
-                    f"<a href='{row['url']}' target='_blank' style='color: #6366F1;'>{row['source']}</a> · "
-                    f"{row['date']}</span></div></div>",
-                    unsafe_allow_html=True
-                )
+with tab3:
+    st.markdown(
+        f'<div style="text-align:center; padding:64px 20px 32px 20px; '
+        f'max-width:760px; margin:0 auto;">'
+        f'<div style="font-size:2.6em; font-weight:800; color:{SLATE_900}; '
+        f'line-height:1.2; margin-bottom:32px; letter-spacing:-0.01em;">'
+        f"Policies don&apos;t speak for themselves."
+        f'<br>'
+        f'<span style="background:linear-gradient(180deg, transparent 62%, '
+        f'{PURPLE}33 62%); padding:0 6px;">'
+        f"The data behind them does."
+        f'</span>'
+        f'</div>'
+        f'<div style="font-size:1.1em; color:{SLATE_700}; line-height:1.75; '
+        f'max-width:620px; margin:0 auto;">'
+        f"Voter education and policy advocacy are how the gap between "
+        f'<b style="color:{SLATE_900};">what officials say</b> and '
+        f'<b style="color:{PURPLE};">what the data shows</b> gets closed. '
+        f"This dashboard is one tool &mdash; read past press releases, "
+        f"ask harder questions, and vote on what the data reveals, not "
+        f"what the narrative promises."
+        f'</div>'
+        f'<div style="margin-top:48px; display:flex; justify-content:center; '
+        f'align-items:center; gap:14px;">'
+        f'<div style="height:1px; width:48px; background:{SLATE_200};"></div>'
+        f'<div style="font-size:0.72em; color:{SLATE_500}; '
+        f'font-weight:700; letter-spacing:2.5px;">'
+        f'BRINGING SF BACK?'
+        f'</div>'
+        f'<div style="height:1px; width:48px; background:{SLATE_200};"></div>'
+        f'</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
