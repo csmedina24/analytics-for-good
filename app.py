@@ -508,24 +508,11 @@ st.markdown(
         opacity: 0;
         animation: fadeUp 0.6s ease-out 2.6s forwards;
     }
-    .hero-arrow-down {
-        text-align: center;
-        font-size: 1.5rem;
-        color: #7C3AED;
-        opacity: 0;
-        animation: fadeUp 0.6s ease-out 2.6s forwards,
-                   bobble 1.6s ease-in-out 3.4s infinite;
-        margin: 0.4em 0 0.2em 0;
-    }
-    @keyframes bobble {
-        0%, 100% { transform: translateY(0); }
-        50%      { transform: translateY(6px); }
-    }
 
     /* Optional: respect users who prefer reduced motion */
     @media (prefers-reduced-motion: reduce) {
         .hero-title, .hero-q, .hero-subtitle,
-        .hero-tabs-wrap, .hero-arrow-down {
+        .hero-tabs-wrap {
             animation: none;
             opacity: 1;
         }
@@ -539,7 +526,6 @@ st.markdown(
         Who benefits from downtown revitalization &mdash; and where does the
         data diverge from the narrative?
     </div>
-    <div class="hero-arrow-down">&darr;</div>
     """,
     unsafe_allow_html=True,
 )
